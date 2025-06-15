@@ -21,7 +21,7 @@ namespace Entregas.Datos
         private static int pedidoCount = 0;
 
         // Agrega un nuevo pedido al arreglo, validando capacidad y unicidad de número de pedido.
-        public static void AddPedido(Pedido pedido)
+        public static void AgregarPedido(Pedido pedido)
         {
             if (pedidoCount >= pedidos.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
@@ -37,7 +37,7 @@ namespace Entregas.Datos
         }
 
         // Devuelve todos los pedidos actualmente almacenados.
-        public static Pedido[] GetAllPedidos()
+        public static Pedido[] ObtenerTodosLosPedidos()
         {
             Pedido[] copia = new Pedido[pedidoCount];
             Array.Copy(pedidos, copia, pedidoCount);
@@ -45,7 +45,7 @@ namespace Entregas.Datos
         }
 
         // Busca un pedido por su número de pedido.
-        public static Pedido FindPedidoByNumero(int numeroPedido)
+        public static Pedido ObtenerPedidoPorNumero(int numeroPedido)
         {
             for (int i = 0; i < pedidoCount; i++)
             {
@@ -56,7 +56,7 @@ namespace Entregas.Datos
         }
 
         // Devuelve la cantidad actual de pedidos almacenados.
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return pedidoCount;
         }

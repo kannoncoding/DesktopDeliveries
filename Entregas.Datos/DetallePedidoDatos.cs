@@ -22,7 +22,7 @@ namespace Entregas.Datos
 
         // Agrega un nuevo detalle de pedido al arreglo, validando capacidad.
 
-        public static void AddDetalle(DetallePedido detalle)
+        public static void AgregarDetalle(DetallePedido detalle)
         {
             if (detalleCount >= detalles.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
@@ -32,7 +32,7 @@ namespace Entregas.Datos
         }
 
         // Devuelve todos los detalles para un pedido específico.
-        public static DetallePedido[] GetDetailsByPedido(int numeroPedido)
+        public static DetallePedido[] ObtenerDetallesPorPedido(int numeroPedido)
         {
             // Primero contar cuántos detalles existen para el pedido
             int cantidad = 0;
@@ -58,7 +58,7 @@ namespace Entregas.Datos
         }
 
         // Devuelve la cantidad actual de detalles almacenados.
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return detalleCount;
         }
