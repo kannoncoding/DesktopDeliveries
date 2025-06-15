@@ -22,7 +22,7 @@ namespace Entregas.Datos
 
         // Agrega un nuevo tipo de artículo al arreglo, validando capacidad y unicidad de ID.
 
-        public static void AddTipoArticulo(TipoArticulo tipo)
+        public static void AgregarTipoArticulo(TipoArticulo tipo)
         {
             // Validar si el arreglo ya está lleno
             if (tipoCount >= tipos.Length)
@@ -43,7 +43,7 @@ namespace Entregas.Datos
 
         // Devuelve todos los tipos de artículo actualmente almacenados.
 
-        public static TipoArticulo[] GetAll()
+        public static TipoArticulo[] ObtenerTodos()
         {
             TipoArticulo[] copia = new TipoArticulo[tipoCount];
             Array.Copy(tipos, copia, tipoCount);

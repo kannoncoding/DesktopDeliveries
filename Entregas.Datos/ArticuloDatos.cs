@@ -23,7 +23,7 @@ namespace Entregas.Datos
 
         // Agrega un nuevo artículo al arreglo, validando capacidad y unicidad de ID.
 
-        public static void AddArticulo(Articulo articulo)
+        public static void AgregarArticulo(Articulo articulo)
         {
             if (articuloCount >= articulos.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
@@ -41,7 +41,7 @@ namespace Entregas.Datos
 
         // Obtiene un artículo por su ID.
 
-        public static Articulo GetArticuloById(int id)
+        public static Articulo ObtenerArticuloPorId(int id)
         {
             for (int i = 0; i < articuloCount; i++)
             {
@@ -54,7 +54,7 @@ namespace Entregas.Datos
 
         // Devuelve todos los artículos actualmente almacenados.
 
-        public static Articulo[] GetAll()
+        public static Articulo[] ObtenerTodos()
         {
             Articulo[] copia = new Articulo[articuloCount];
             Array.Copy(articulos, copia, articuloCount);
@@ -64,7 +64,7 @@ namespace Entregas.Datos
 
         // Devuelve la cantidad actual de artículos almacenados.
 
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return articuloCount;
         }
