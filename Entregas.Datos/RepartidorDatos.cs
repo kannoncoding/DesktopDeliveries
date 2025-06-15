@@ -46,7 +46,7 @@ namespace Entregas.Datos
         }
 
         // Busca un repartidor por identificación.
-        public static Repartidor ObtenerRepartidorPorId(int identificacion)
+        public static Repartidor? ObtenerRepartidorPorId(int identificacion)
         {
             for (int i = 0; i < repartidorCount; i++)
             {

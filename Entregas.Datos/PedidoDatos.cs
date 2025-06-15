@@ -45,7 +45,7 @@ namespace Entregas.Datos
         }
 
         // Busca un pedido por su número de pedido.
-        public static Pedido ObtenerPedidoPorNumero(int numeroPedido)
+        public static Pedido? ObtenerPedidoPorNumero(int numeroPedido)
         {
             for (int i = 0; i < pedidoCount; i++)
             {
