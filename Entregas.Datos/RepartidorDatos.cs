@@ -21,7 +21,7 @@ namespace Entregas.Datos
         private static int repartidorCount = 0;
 
         // Agrega un nuevo repartidor al arreglo, validando capacidad y unicidad de identificación.
-        public static void AddRepartidor(Repartidor repartidor)
+        public static void AgregarRepartidor(Repartidor repartidor)
         {
             if (repartidorCount >= repartidores.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
@@ -38,7 +38,7 @@ namespace Entregas.Datos
 
         // Devuelve todos los repartidores actualmente almacenados.
 
-        public static Repartidor[] GetAll()
+        public static Repartidor[] ObtenerTodos()
         {
             Repartidor[] copia = new Repartidor[repartidorCount];
             Array.Copy(repartidores, copia, repartidorCount);
@@ -46,7 +46,7 @@ namespace Entregas.Datos
         }
 
         // Busca un repartidor por identificación.
-        public static Repartidor FindRepartidorById(int identificacion)
+        public static Repartidor ObtenerRepartidorPorId(int identificacion)
         {
             for (int i = 0; i < repartidorCount; i++)
             {
@@ -58,7 +58,7 @@ namespace Entregas.Datos
 
         // Devuelve la cantidad actual de repartidores almacenados.
 
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return repartidorCount;
         }
