@@ -49,7 +49,7 @@ namespace Entregas.Datos
 
 
         // Busca un cliente por identificación.
-        public static Cliente ObtenerClientePorId(int identificacion)
+        public static Cliente? ObtenerClientePorId(int identificacion)
         {
             for (int i = 0; i < clienteCount; i++)
             {
