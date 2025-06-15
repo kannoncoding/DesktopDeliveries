@@ -2,8 +2,7 @@
 // II Cuatrimestre 2025
 // Programación Avanzada con C# - Proyecto 1
 // Jorge Luis Arias Melendez
-// Descripción del archivo: Provee almacenamiento y manejo de Tipos de Artículo para ENTREGAS S.A. 
-// Incluye las operaciones para agregar y consultar tipos de artículo (10 máximo).
+// Provee almacenamiento y manejo de Tipos de Artículo para ENTREGAS S.A. 
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +19,9 @@ namespace Entregas.Datos
         private static TipoArticulo[] tipos = new TipoArticulo[10];
         private static int tipoCount = 0;
 
-        /// <summary>
-        /// Agrega un nuevo tipo de artículo al arreglo, validando capacidad y unicidad de ID.
-        /// </summary>
-        /// <param name="tipo">Objeto TipoArticulo a agregar</param>
-        /// <exception cref="InvalidOperationException">Si el arreglo está lleno o el ID ya existe</exception>
+
+        // Agrega un nuevo tipo de artículo al arreglo, validando capacidad y unicidad de ID.
+
         public static void AddTipoArticulo(TipoArticulo tipo)
         {
             // Validar si el arreglo ya está lleno
@@ -43,9 +40,9 @@ namespace Entregas.Datos
             tipoCount++;
         }
 
-        /// <summary>
-        /// Devuelve todos los tipos de artículo actualmente almacenados.
-        /// </summary>
+
+        // Devuelve todos los tipos de artículo actualmente almacenados.
+
         public static TipoArticulo[] GetAll()
         {
             TipoArticulo[] copia = new TipoArticulo[tipoCount];
@@ -53,9 +50,9 @@ namespace Entregas.Datos
             return copia;
         }
 
-        /// <summary>
-        /// Devuelve la cantidad actual de tipos almacenados.
-        /// </summary>
+
+        // Devuelve la cantidad actual de tipos almacenados.
+
         public static int GetCount()
         {
             return tipoCount;

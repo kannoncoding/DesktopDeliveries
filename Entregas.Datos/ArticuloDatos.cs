@@ -2,7 +2,7 @@
 // II Cuatrimestre 2025
 // Programación Avanzada con C# - Proyecto 1
 // Jorge Luis Arias Melendez
-// Descripción del archivo: Proporciona almacenamiento y operaciones de manejo de artículos para ENTREGAS S.A.
+// Proporciona almacenamiento y operaciones de manejo de artículos para ENTREGAS S.A.
 
 using System;
 using System.Collections.Generic;
