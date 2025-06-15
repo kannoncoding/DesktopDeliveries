@@ -41,7 +41,7 @@ namespace Entregas.Datos
 
         // Obtiene un artículo por su ID.
 
-        public static Articulo ObtenerArticuloPorId(int id)
+        public static Articulo? ObtenerArticuloPorId(int id)
         {
             for (int i = 0; i < articuloCount; i++)
             {
