@@ -16,44 +16,49 @@ namespace Entregas.Datos
 {
     public static class TipoArticuloDatos
     {
-        // Arreglo estático para almacenar hasta 10 tipos de artículo
+        // Arreglo estático de 10 posiciones para almacenar tipos de artículo
         private static TipoArticulo[] tipos = new TipoArticulo[10];
         private static int tipoCount = 0;
 
-        // Agrega un nuevo TipoArticulo, validando duplicados y límite
+        /// <summary>
+        /// Agrega un nuevo tipo de artículo al arreglo, validando capacidad y unicidad de ID.
+        /// </summary>
+        /// <param name="tipo">Objeto TipoArticulo a agregar</param>
+        /// <exception cref="InvalidOperationException">Si el arreglo está lleno o el ID ya existe</exception>
         public static void AddTipoArticulo(TipoArticulo tipo)
         {
-            if (tipoCount >= 10)
-                throw new InvalidOperationException("No se pueden ingresar más registros"); // Límite alcanzado
+            // Validar si el arreglo ya está lleno
+            if (tipoCount >= tipos.Length)
+                throw new InvalidOperationException("No se pueden ingresar más registros");
 
-            // Validar Id único
+            // Validar unicidad de ID
             for (int i = 0; i < tipoCount; i++)
             {
                 if (tipos[i] != null && tipos[i].Id == tipo.Id)
-                    throw new InvalidOperationException("El Id de Tipo de Artículo ya existe, ingrese uno diferente.");
+                    throw new InvalidOperationException("ID ya existe");
             }
 
+            // Insertar el nuevo tipo y aumentar el contador
             tipos[tipoCount] = tipo;
             tipoCount++;
         }
 
-        // Devuelve todos los tipos actualmente almacenados
-        public static TipoArticulo[] GetAllTipos()
+        /// <summary>
+        /// Devuelve todos los tipos de artículo actualmente almacenados.
+        /// </summary>
+        public static TipoArticulo[] GetAll()
         {
-            TipoArticulo[] resultado = new TipoArticulo[tipoCount];
-            Array.Copy(tipos, resultado, tipoCount);
-            return resultado;
+            TipoArticulo[] copia = new TipoArticulo[tipoCount];
+            Array.Copy(tipos, copia, tipoCount);
+            return copia;
         }
 
-        // Opcional: Buscar por Id (útil para lógica de UI/relaciones)
-        public static TipoArticulo GetTipoById(int id)
+        /// <summary>
+        /// Devuelve la cantidad actual de tipos almacenados.
+        /// </summary>
+        public static int GetCount()
         {
-            for (int i = 0; i < tipoCount; i++)
-            {
-                if (tipos[i] != null && tipos[i].Id == id)
-                    return tipos[i];
-            }
-            return null;
+            return tipoCount;
         }
     }
 }
