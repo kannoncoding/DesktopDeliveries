@@ -53,7 +53,7 @@ namespace Entregas.Datos
 
         // Devuelve la cantidad actual de tipos almacenados.
 
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return tipoCount;
         }

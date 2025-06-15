@@ -28,6 +28,10 @@ namespace Entregas.Logica
             if (id <= 0)
                 return "El Id debe ser un número positivo.";
 
+            // Validar que la fecha de nacimiento no sea futura
+            if (fechaNac.Date > DateTime.Today)
+                return "La fecha de nacimiento no puede ser posterior a hoy.";
+
             // Validar que el repartidor sea mayor de edad (18+)
             int edad = CalcularEdad(fechaNac, DateTime.Today);
             if (edad < 18)
@@ -36,10 +40,6 @@ namespace Entregas.Logica
             // Validar que la fecha de contratación no sea futura
             if (fechaContrat.Date > DateTime.Today)
                 return "La fecha de contratación no puede ser posterior a hoy.";
-
-            // Validar que la fecha de nacimiento no sea futura
-            if (fechaNac.Date > DateTime.Today)
-                return "La fecha de nacimiento no puede ser posterior a hoy.";
 
             // Intentar agregar el repartidor a la capa de datos
             try
