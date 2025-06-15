@@ -22,7 +22,7 @@ namespace Entregas.Datos
 
         // Agrega un nuevo cliente al arreglo, validando capacidad y unicidad de identificación.
 
-        public static void AddCliente(Cliente cliente)
+        public static void AgregarCliente(Cliente cliente)
         {
             if (clienteCount >= clientes.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
@@ -40,7 +40,7 @@ namespace Entregas.Datos
 
         // Devuelve todos los clientes actualmente almacenados.
 
-        public static Cliente[] GetAll()
+        public static Cliente[] ObtenerTodos()
         {
             Cliente[] copia = new Cliente[clienteCount];
             Array.Copy(clientes, copia, clienteCount);
@@ -49,7 +49,7 @@ namespace Entregas.Datos
 
 
         // Busca un cliente por identificación.
-        public static Cliente FindClienteById(int identificacion)
+        public static Cliente ObtenerClientePorId(int identificacion)
         {
             for (int i = 0; i < clienteCount; i++)
             {
@@ -62,7 +62,7 @@ namespace Entregas.Datos
 
         // Devuelve la cantidad actual de clientes almacenados.
 
-        public static int GetCount()
+        public static int ObtenerCantidad()
         {
             return clienteCount;
         }
