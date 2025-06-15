@@ -8,56 +8,65 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        // Registrar Tipos de Artículo
+        Console.WriteLine(TipoArticuloLogica.RegistrarTipoArticulo(1, "Oficina", "Artículos de oficina"));
+        Console.WriteLine(TipoArticuloLogica.RegistrarTipoArticulo(2, "Abarrotes", "Artículos de supermercado"));
 
-        // Prueba: Registrar un Tipo de Artículo
-        var msg = TipoArticuloLogica.RegistrarTipoArticulo(1, "Oficina", "Artículos de oficina");
-        Console.WriteLine("Registrar TipoArticulo: " + msg);
+        // Registrar Artículos
+        var tipoOficina = TipoArticuloDatos.ObtenerTodos()[0];
+        var tipoAbarrotes = TipoArticuloDatos.ObtenerTodos()[1];
 
-        // Prueba: Intentar registrar con ID duplicado
-        var msg2 = TipoArticuloLogica.RegistrarTipoArticulo(1, "Abarrotes", "Supermercado");
-        Console.WriteLine("Duplicado TipoArticulo: " + msg2);
+        Console.WriteLine(ArticuloLogica.RegistrarArticulo(10, "Lapicero", tipoOficina, "100", "10", true));
+        Console.WriteLine(ArticuloLogica.RegistrarArticulo(11, "Resma Papel", tipoOficina, "3000", "8", true));
+        Console.WriteLine(ArticuloLogica.RegistrarArticulo(20, "Arroz", tipoAbarrotes, "1800", "5", true));
 
-        // Prueba: Registrar un artículo
-        var tipo = TipoArticuloDatos.ObtenerTodos()[0];
-        var msg3 = ArticuloLogica.RegistrarArticulo(10, "Lapicero", tipo, "120.5", "5", true);
-        Console.WriteLine("Registrar Articulo: " + msg3);
+        // Registrar Clientes
+        Console.WriteLine(ClienteLogica.RegistrarCliente(1, "Carlos", "Gómez", "Solís", DateTime.Today.AddYears(-30), true));
+        Console.WriteLine(ClienteLogica.RegistrarCliente(2, "Laura", "Mora", "Sánchez", DateTime.Today.AddYears(-22), true));
 
-        // Prueba: Cliente menor de edad rechazado (debería permitir cualquier fecha, pero vamos a simular un dato futuro)
-        var msg4 = ClienteLogica.RegistrarCliente(11, "Juan", "Pérez", "Soto", DateTime.Today.AddDays(1), true);
-        Console.WriteLine("Registrar Cliente con fecha futura: " + msg4);
+        // Registrar Repartidores
+        var fechaContrat = DateTime.Today.AddMonths(-2);
+        Console.WriteLine(RepartidorLogica.RegistrarRepartidor(1, "Pedro", "Jiménez", "Solano", DateTime.Today.AddYears(-35), fechaContrat, true));
+        Console.WriteLine(RepartidorLogica.RegistrarRepartidor(2, "María", "Rodríguez", "Vargas", DateTime.Today.AddYears(-29), fechaContrat, true));
 
-        // Prueba: Registrar un repartidor menor de edad
-        var fechaMenorEdad = DateTime.Today.AddYears(-17);
-        var msg5 = RepartidorLogica.RegistrarRepartidor(1, "Luis", "Quesada", "Jiménez", fechaMenorEdad, DateTime.Today, true);
-        Console.WriteLine("Repartidor menor de edad: " + msg5);
+        // Crear Pedidos válidos
+        var cliente1 = ClienteDatos.ObtenerTodos()[0];
+        var cliente2 = ClienteDatos.ObtenerTodos()[1];
+        var repartidor1 = RepartidorDatos.ObtenerTodos()[0];
+        var repartidor2 = RepartidorDatos.ObtenerTodos()[1];
 
-        // Prueba: Registrar un repartidor válido
-        var fechaAdulto = DateTime.Today.AddYears(-25);
-        var msg6 = RepartidorLogica.RegistrarRepartidor(2, "Pedro", "Jiménez", "Solano", fechaAdulto, DateTime.Today, true);
-        Console.WriteLine("Repartidor válido: " + msg6);
+        Console.WriteLine(PedidoLogica.CrearPedido(100, DateTime.Today, cliente1, repartidor1, "Calle 1, Ciudad"));
+        Console.WriteLine(PedidoLogica.CrearPedido(101, DateTime.Today, cliente2, repartidor2, "Calle 2, Ciudad"));
 
-        // Prueba: Crear pedido
-        var cliente = ClienteDatos.ObtenerTodos().Length > 0 ? ClienteDatos.ObtenerTodos()[0] : null;
-        var repartidor = RepartidorDatos.ObtenerTodos().Length > 0 ? RepartidorDatos.ObtenerTodos()[0] : null;
-        var msg7 = PedidoLogica.CrearPedido(100, DateTime.Today, cliente, repartidor, "Dirección de entrega");
-        Console.WriteLine("Registrar Pedido: " + msg7);
+        // Agregar detalles a pedidos
+        var lapicero = ArticuloDatos.ObtenerTodos()[0];
+        var papel = ArticuloDatos.ObtenerTodos()[1];
+        var arroz = ArticuloDatos.ObtenerTodos()[2];
 
-        // Prueba: Agregar detalle al pedido con inventario insuficiente
-        var articulo = ArticuloDatos.ObtenerTodos()[0];
-        var msg8 = PedidoLogica.AgregarDetalleAPedido(100, articulo, 99);
-        Console.WriteLine("Detalle con inventario insuficiente: " + msg8);
+        Console.WriteLine(PedidoLogica.AgregarDetalleAPedido(100, lapicero, 2)); // Pedido 100, Lapicero
+        Console.WriteLine(PedidoLogica.AgregarDetalleAPedido(100, papel, 1));    // Pedido 100, Resma Papel
+        Console.WriteLine(PedidoLogica.AgregarDetalleAPedido(101, arroz, 2));    // Pedido 101, Arroz
+        Console.WriteLine(PedidoLogica.AgregarDetalleAPedido(101, papel, 3));    // Pedido 101, Resma Papel
 
-        // Prueba: Agregar detalle válido
-        var msg9 = PedidoLogica.AgregarDetalleAPedido(100, articulo, 2);
-        Console.WriteLine("Detalle válido: " + msg9);
+        // Mostrar detalles de cada pedido
+        var pedidos = PedidoDatos.ObtenerTodosLosPedidos();
+        foreach (var pedido in pedidos)
+        {
+            if (pedido != null)
+            {
+                Console.WriteLine($"\nDetalles del Pedido #{pedido.NumeroPedido} para {pedido.Cliente.Nombre} (Repartidor: {pedido.Repartidor.Nombre}):");
+                var detalles = DetallePedidoDatos.ObtenerDetallesPorPedido(pedido.NumeroPedido);
+                foreach (var detalle in detalles)
+                {
+                    if (detalle != null)
+                    {
+                        Console.WriteLine($"  Artículo: {detalle.Articulo.Nombre} | Cantidad: {detalle.Cantidad} | Monto: {detalle.Monto:C2}");
+                    }
+                }
+            }
+        }
 
-        // Prueba: Intentar agregar el mismo artículo dos veces al mismo pedido
-        var msg10 = PedidoLogica.AgregarDetalleAPedido(100, articulo, 1);
-        Console.WriteLine("Detalle duplicado: " + msg10);
-
-        Console.WriteLine("PRUEBAS TERMINADAS.");
+        Console.WriteLine("\nPRUEBAS TERMINADAS.");
         Console.ReadKey();
     }
 }
-
