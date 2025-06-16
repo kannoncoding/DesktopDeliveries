@@ -35,6 +35,12 @@ namespace Entregas.Entidades
         // Estado del repartidor: activo (true) o inactivo (false)
         public required bool Activo { get; set; }
 
+        public string NombreCompleto
+        {
+            get { return $"{Nombre} {PrimerApellido} {SegundoApellido}"; }
+        }
+
+
         // Constructor vacío
         public Repartidor() { }
 

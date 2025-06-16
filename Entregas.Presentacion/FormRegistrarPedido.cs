@@ -43,46 +43,45 @@ namespace Entregas.Presentacion
                 cmbArticulo.DropDownStyle = ComboBoxStyle.DropDownList;
 
                 // Cargar clientes activos
-                cmbCliente.Items.Clear();
                 var clientes = Entregas.Logica.ClienteLogica.ObtenerTodos()
-                                .Where(c => c.Activo)
+                                .Where(c => c != null && c.Activo)
                                 .ToArray();
-                if (clientes == null || clientes.Length == 0)
+                if (clientes.Length == 0)
                 {
                     MessageBox.Show("Debe haber al menos un cliente registrado para crear un pedido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Enabled = false;
                     return;
                 }
-                foreach (var cli in clientes)
-                    cmbCliente.Items.Add(cli);
+                cmbCliente.DataSource = clientes;
+                cmbCliente.DisplayMember = "NombreCompleto"; // Requiere propiedad en entidad Cliente
+
 
                 // Cargar repartidores activos
-                cmbRepartidor.Items.Clear();
                 var repartidores = Entregas.Logica.RepartidorLogica.ObtenerTodos()
-                                    .Where(r => r.Activo)
+                                    .Where(r => r != null && r.Activo)
                                     .ToArray();
-                if (repartidores == null || repartidores.Length == 0)
+                if (repartidores.Length == 0)
                 {
                     MessageBox.Show("Debe haber al menos un repartidor registrado para crear un pedido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Enabled = false;
                     return;
                 }
-                foreach (var rep in repartidores)
-                    cmbRepartidor.Items.Add(rep);
+                cmbRepartidor.DataSource = repartidores;
+                cmbRepartidor.DisplayMember = "NombreCompleto"; // Requiere propiedad en entidad Repartidor
+
 
                 // Cargar artículos activos
-                cmbArticulo.Items.Clear();
                 var articulos = Entregas.Logica.ArticuloLogica.ObtenerTodos()
-                                 .Where(a => a.Activo)
+                                 .Where(a => a != null && a.Activo)
                                  .ToArray();
-                if (articulos == null || articulos.Length == 0)
+                if (articulos.Length == 0)
                 {
                     MessageBox.Show("Debe haber al menos un artículo activo para crear un pedido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Enabled = false;
                     return;
                 }
-                foreach (var art in articulos)
-                    cmbArticulo.Items.Add(art);
+                cmbArticulo.DataSource = articulos;
+                cmbArticulo.DisplayMember = "Nombre";
 
                 // NumericUpDown para cantidad (mínimo 1)
                 nudCantidad.Minimum = 1;
@@ -108,7 +107,6 @@ namespace Entregas.Presentacion
                 this.Enabled = false;
             }
         }
-
 
         // Función auxiliar para habilitar/deshabilitar sección detalle
         private void HabilitarDetalle(bool habilitar)
@@ -233,10 +231,16 @@ namespace Entregas.Presentacion
                     );
                 }
 
-                // Si el artículo quedó sin inventario, quítalo del ComboBox
+                // Si el artículo quedó sin inventario, actualiza ComboBox
                 if (!articulo.Activo)
                 {
-                    cmbArticulo.Items.Remove(articulo);
+                    // Refresca el DataSource para ocultar artículos inactivos
+                    var articulos = Entregas.Logica.ArticuloLogica.ObtenerTodos()
+                                     .Where(a => a != null && a.Activo)
+                                     .ToArray();
+                    cmbArticulo.DataSource = null;
+                    cmbArticulo.DataSource = articulos;
+                    cmbArticulo.DisplayMember = "Nombre";
                 }
 
                 // Resetear selección para nuevo detalle
@@ -248,6 +252,5 @@ namespace Entregas.Presentacion
                 MessageBox.Show("Ocurrió un error al agregar el detalle al pedido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
     }
 }

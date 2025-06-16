@@ -96,20 +96,14 @@ namespace Entregas.Presentacion
         // Evento para actualizar detalle al seleccionar un pedido
         private void dgvPedidos_SelectionChanged(object sender, EventArgs e)
         {
-            dgvDetallePedido.Rows.Clear();
-
             if (dgvPedidos.SelectedRows.Count > 0)
             {
-                var fila = dgvPedidos.SelectedRows[0];
-                int numeroPedido;
-
-                // Intentar obtener el número de pedido de la fila seleccionada
-                if (int.TryParse(fila.Cells["NumeroPedido"].Value?.ToString(), out numeroPedido))
-                {
-                    CargarDetallePedido(numeroPedido);
-                }
+                int numeroPedido = Convert.ToInt32(dgvPedidos.SelectedRows[0].Cells[0].Value);
+                CargarDetallePedido(numeroPedido);
             }
         }
+
+
 
         private void CargarDetallePedido(int numeroPedido)
         {
@@ -135,5 +129,7 @@ namespace Entregas.Presentacion
                 }
             }
         }
+
+        
     }
 }

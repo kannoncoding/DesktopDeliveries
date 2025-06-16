@@ -45,8 +45,9 @@
             dgvPedidos.Name = "dgvPedidos";
             dgvPedidos.ReadOnly = true;
             dgvPedidos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPedidos.Size = new Size(372, 398);
+            dgvPedidos.Size = new Size(560, 398);
             dgvPedidos.TabIndex = 0;
+        
             dgvPedidos.SelectionChanged += dgvPedidos_SelectionChanged;
             // 
             // dgvDetallePedido
@@ -54,11 +55,11 @@
             dgvDetallePedido.AllowUserToAddRows = false;
             dgvDetallePedido.AllowUserToDeleteRows = false;
             dgvDetallePedido.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDetallePedido.Location = new Point(396, 40);
+            dgvDetallePedido.Location = new Point(578, 40);
             dgvDetallePedido.Name = "dgvDetallePedido";
             dgvDetallePedido.ReadOnly = true;
             dgvDetallePedido.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDetallePedido.Size = new Size(392, 398);
+            dgvDetallePedido.Size = new Size(613, 398);
             dgvDetallePedido.TabIndex = 1;
             // 
             // label1
@@ -73,7 +74,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(396, 9);
+            label2.Location = new Point(578, 9);
             label2.Name = "label2";
             label2.Size = new Size(109, 15);
             label2.TabIndex = 3;
@@ -83,7 +84,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1203, 706);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(dgvDetallePedido);

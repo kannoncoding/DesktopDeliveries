@@ -124,7 +124,7 @@
             cmbCliente.FormattingEnabled = true;
             cmbCliente.Location = new Point(121, 60);
             cmbCliente.Name = "cmbCliente";
-            cmbCliente.Size = new Size(121, 23);
+            cmbCliente.Size = new Size(244, 23);
             cmbCliente.TabIndex = 8;
             // 
             // cmbRepartidor
@@ -132,7 +132,7 @@
             cmbRepartidor.FormattingEnabled = true;
             cmbRepartidor.Location = new Point(139, 89);
             cmbRepartidor.Name = "cmbRepartidor";
-            cmbRepartidor.Size = new Size(121, 23);
+            cmbRepartidor.Size = new Size(226, 23);
             cmbRepartidor.TabIndex = 9;
             // 
             // direccionPedido
@@ -182,7 +182,7 @@
             cmbArticulo.FormattingEnabled = true;
             cmbArticulo.Location = new Point(70, 204);
             cmbArticulo.Name = "cmbArticulo";
-            cmbArticulo.Size = new Size(121, 23);
+            cmbArticulo.Size = new Size(295, 23);
             cmbArticulo.TabIndex = 15;
             // 
             // nudCantidad

@@ -32,6 +32,12 @@ namespace Entregas.Entidades
         // Estado del cliente: activo (true) o inactivo (false)
         public required bool Activo { get; set; }
 
+        public string NombreCompleto
+        {
+            get { return $"{Nombre} {PrimerApellido} {SegundoApellido}"; }
+        }
+
+
         // Constructor vacío
         public Cliente() { }
 
