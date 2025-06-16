@@ -62,7 +62,6 @@
             tipoArticuloToolStripMenuItem.Name = "tipoArticuloToolStripMenuItem";
             tipoArticuloToolStripMenuItem.Size = new Size(93, 20);
             tipoArticuloToolStripMenuItem.Text = "Tipos Articulo";
-            tipoArticuloToolStripMenuItem.Click += tipoArticuloToolStripMenuItem_Click;
             // 
             // registrarTipoArticuloToolStripMenuItem
             // 
@@ -76,6 +75,7 @@
             consultarTiposDeArticuloToolStripMenuItem.Name = "consultarTiposDeArticuloToolStripMenuItem";
             consultarTiposDeArticuloToolStripMenuItem.Size = new Size(218, 22);
             consultarTiposDeArticuloToolStripMenuItem.Text = "Consultar Tipos de Articulo";
+            consultarTiposDeArticuloToolStripMenuItem.Click += consultarTipoArticuloToolStripMenuItem_Click;
             // 
             // articuloToolStripMenuItem
             // 
@@ -87,14 +87,16 @@
             // registrarArticuloToolStripMenuItem
             // 
             registrarArticuloToolStripMenuItem.Name = "registrarArticuloToolStripMenuItem";
-            registrarArticuloToolStripMenuItem.Size = new Size(175, 22);
+            registrarArticuloToolStripMenuItem.Size = new Size(180, 22);
             registrarArticuloToolStripMenuItem.Text = "Registrar Articulo";
+            registrarArticuloToolStripMenuItem.Click += registrarArticuloToolStripMenuItem_Click;
             // 
             // consultarArticulosToolStripMenuItem
             // 
             consultarArticulosToolStripMenuItem.Name = "consultarArticulosToolStripMenuItem";
-            consultarArticulosToolStripMenuItem.Size = new Size(175, 22);
+            consultarArticulosToolStripMenuItem.Size = new Size(180, 22);
             consultarArticulosToolStripMenuItem.Text = "Consultar Articulos";
+            consultarArticulosToolStripMenuItem.Click += consultarArticuloToolStripMenuItem_Click;
             // 
             // repartidorToolStripMenuItem
             // 
@@ -108,12 +110,14 @@
             registrarRepartidorToolStripMenuItem.Name = "registrarRepartidorToolStripMenuItem";
             registrarRepartidorToolStripMenuItem.Size = new Size(194, 22);
             registrarRepartidorToolStripMenuItem.Text = "Registrar Repartidor";
+            registrarRepartidorToolStripMenuItem.Click += registrarRepartidorToolStripMenuItem_Click;
             // 
             // consultarRepartidoresToolStripMenuItem
             // 
             consultarRepartidoresToolStripMenuItem.Name = "consultarRepartidoresToolStripMenuItem";
             consultarRepartidoresToolStripMenuItem.Size = new Size(194, 22);
             consultarRepartidoresToolStripMenuItem.Text = "Consultar Repartidores";
+            consultarRepartidoresToolStripMenuItem.Click += consultarRepartidorToolStripMenuItem_Click;
             // 
             // clienteToolStripMenuItem
             // 
@@ -125,14 +129,16 @@
             // registrarClienteToolStripMenuItem
             // 
             registrarClienteToolStripMenuItem.Name = "registrarClienteToolStripMenuItem";
-            registrarClienteToolStripMenuItem.Size = new Size(170, 22);
+            registrarClienteToolStripMenuItem.Size = new Size(180, 22);
             registrarClienteToolStripMenuItem.Text = "Registrar Cliente";
+            registrarClienteToolStripMenuItem.Click += registrarClienteToolStripMenuItem_Click;
             // 
             // consultarClientesToolStripMenuItem
             // 
             consultarClientesToolStripMenuItem.Name = "consultarClientesToolStripMenuItem";
-            consultarClientesToolStripMenuItem.Size = new Size(170, 22);
+            consultarClientesToolStripMenuItem.Size = new Size(180, 22);
             consultarClientesToolStripMenuItem.Text = "Consultar Clientes";
+            consultarClientesToolStripMenuItem.Click += consultarClienteToolStripMenuItem_Click;
             // 
             // pedidoToolStripMenuItem
             // 
@@ -140,19 +146,20 @@
             pedidoToolStripMenuItem.Name = "pedidoToolStripMenuItem";
             pedidoToolStripMenuItem.Size = new Size(61, 20);
             pedidoToolStripMenuItem.Text = "Pedidos";
-            pedidoToolStripMenuItem.Click += pedidoToolStripMenuItem_Click;
             // 
             // registrarPedidoToolStripMenuItem
             // 
             registrarPedidoToolStripMenuItem.Name = "registrarPedidoToolStripMenuItem";
-            registrarPedidoToolStripMenuItem.Size = new Size(170, 22);
+            registrarPedidoToolStripMenuItem.Size = new Size(180, 22);
             registrarPedidoToolStripMenuItem.Text = "Registrar Pedido";
+            registrarPedidoToolStripMenuItem.Click += registrarPedidoToolStripMenuItem_Click;
             // 
             // consultarPedidosToolStripMenuItem
             // 
             consultarPedidosToolStripMenuItem.Name = "consultarPedidosToolStripMenuItem";
-            consultarPedidosToolStripMenuItem.Size = new Size(170, 22);
+            consultarPedidosToolStripMenuItem.Size = new Size(180, 22);
             consultarPedidosToolStripMenuItem.Text = "Consultar Pedidos";
+            consultarPedidosToolStripMenuItem.Click += consultarPedidoToolStripMenuItem_Click;
             // 
             // FormMenuPrincipal
             // 

@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Universidad Estatal a Distancia (UNED)
+// II Cuatrimestre 2025
+// Programación Avanzada con C# - Proyecto 1
+// Jorge Luis Arias Melendez
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

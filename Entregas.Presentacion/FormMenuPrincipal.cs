@@ -22,16 +22,7 @@ namespace Entregas.Presentacion
             InitializeComponent();
         }
 
-        private void pedidoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tipoArticuloToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        // Registrar
         private void registrarTipoArticuloToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var frm = new FormRegistrarTipoArticulo())
@@ -40,9 +31,82 @@ namespace Entregas.Presentacion
             }
         }
 
+        private void registrarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormRegistrarArticulo())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void registrarClienteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormRegistrarCliente())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void registrarRepartidorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormRegistrarRepartidor())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void registrarPedidoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormRegistrarPedido())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        // Consultar
+        private void consultarTipoArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormConsultarTipoArticulo())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void consultarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormConsultarArticulo())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void consultarClienteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormConsultarCliente())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void consultarRepartidorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormConsultarRepartidor())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void consultarPedidoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormConsultarPedido())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
         private void FormMenuPrincipal_Load(object sender, EventArgs e)
         {
-
+            // Puedes dejarlo vacío o mostrar bienvenida.
         }
     }
 }
