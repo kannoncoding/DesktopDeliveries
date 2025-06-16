@@ -35,6 +35,13 @@ namespace Entregas.Entidades
             Nombre = nombre;
             Descripcion = descripcion;
         }
+
+        // Sobrescribe ToString() para mostrar el nombre en controles como ComboBox
+        public override string ToString()
+        {
+            return Nombre;
+        }
+
     }
 
 }

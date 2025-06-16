@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Universidad Estatal a Distancia (UNED)
+// II Cuatrimestre 2025
+// Programación Avanzada con C# - Proyecto 1
+// Jorge Luis Arias Melendez
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,6 +28,19 @@ namespace Entregas.Presentacion
         }
 
         private void tipoArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void registrarTipoArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new FormRegistrarTipoArticulo())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void FormMenuPrincipal_Load(object sender, EventArgs e)
         {
 
         }
