@@ -79,7 +79,7 @@ namespace Entregas.Logica
                 return "La cantidad debe ser mayor que cero.";
 
             // Validar que el pedido exista
-            Pedido pedido = PedidoDatos.ObtenerPedidoPorNumero(pedidoNum);
+            Pedido? pedido = PedidoDatos.ObtenerPedidoPorNumero(pedidoNum);
             if (pedido == null)
                 return "El pedido no existe.";
 
