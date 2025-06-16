@@ -24,6 +24,9 @@ namespace Entregas.Datos
 
         public static void AgregarCliente(Cliente cliente)
         {
+            if (cliente == null)
+                throw new ArgumentNullException(nameof(cliente), "El cliente no puede ser null.");
+
             if (clienteCount >= clientes.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 

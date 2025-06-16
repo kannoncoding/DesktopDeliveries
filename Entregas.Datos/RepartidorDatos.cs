@@ -23,6 +23,9 @@ namespace Entregas.Datos
         // Agrega un nuevo repartidor al arreglo, validando capacidad y unicidad de identificación.
         public static void AgregarRepartidor(Repartidor repartidor)
         {
+            if (repartidor == null)
+                throw new ArgumentNullException(nameof(repartidor), "El repartidor no puede ser null.");
+
             if (repartidorCount >= repartidores.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 

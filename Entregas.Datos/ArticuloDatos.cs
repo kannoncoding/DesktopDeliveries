@@ -25,6 +25,9 @@ namespace Entregas.Datos
 
         public static void AgregarArticulo(Articulo articulo)
         {
+            if (articulo == null)
+                throw new ArgumentNullException(nameof(articulo), "El artículo no puede ser null.");
+
             if (articuloCount >= articulos.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 

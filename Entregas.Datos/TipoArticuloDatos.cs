@@ -24,18 +24,18 @@ namespace Entregas.Datos
 
         public static void AgregarTipoArticulo(TipoArticulo tipo)
         {
-            // Validar si el arreglo ya está lleno
+            if (tipo == null)
+                throw new ArgumentNullException(nameof(tipo), "El tipo de artículo no puede ser null.");
+
             if (tipoCount >= tipos.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 
-            // Validar unicidad de ID
             for (int i = 0; i < tipoCount; i++)
             {
                 if (tipos[i] != null && tipos[i].Id == tipo.Id)
                     throw new InvalidOperationException("ID ya existe");
             }
 
-            // Insertar el nuevo tipo y aumentar el contador
             tipos[tipoCount] = tipo;
             tipoCount++;
         }

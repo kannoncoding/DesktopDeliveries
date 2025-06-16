@@ -23,6 +23,9 @@ namespace Entregas.Datos
         // Agrega un nuevo pedido al arreglo, validando capacidad y unicidad de número de pedido.
         public static void AgregarPedido(Pedido pedido)
         {
+            if (pedido == null)
+                throw new ArgumentNullException(nameof(pedido), "El pedido no puede ser null.");
+
             if (pedidoCount >= pedidos.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 

@@ -24,6 +24,9 @@ namespace Entregas.Datos
 
         public static void AgregarDetalle(DetallePedido detalle)
         {
+            if (detalle == null)
+                throw new ArgumentNullException(nameof(detalle), "El detalle de pedido no puede ser null.");
+
             if (detalleCount >= detalles.Length)
                 throw new InvalidOperationException("No se pueden ingresar más registros");
 
