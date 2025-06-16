@@ -18,7 +18,7 @@ namespace Entregas.Logica
     public static class PedidoLogica
     {
         // Crea un nuevo pedido (encabezado) validando los datos necesarios
-        public static string CrearPedido(int numero, DateTime fecha, Cliente cliente, Repartidor repartidor, string direccion)
+        public static string RegistrarPedido(int numero, DateTime fecha, Cliente cliente, Repartidor repartidor, string direccion)
         {
             // Validar que el número de pedido sea positivo
             if (numero <= 0)
