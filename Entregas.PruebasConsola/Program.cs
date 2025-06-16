@@ -60,11 +60,13 @@ class Program
                 {
                     if (detalle != null)
                     {
-                        Console.WriteLine($"  Artículo: {detalle.Articulo.Nombre} | Cantidad: {detalle.Cantidad} | Monto: {detalle.Monto:C2}");
+                        // Ahora muestra CRC como prefijo de moneda
+                        Console.WriteLine($"  Artículo: {detalle.Articulo.Nombre} | Cantidad: {detalle.Cantidad} | Monto: CRC {detalle.Monto:N2}");
                     }
                 }
             }
         }
+
 
         Console.WriteLine("\nPRUEBAS TERMINADAS.");
         Console.ReadKey();
