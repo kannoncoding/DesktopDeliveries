@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 using Entregas.Entidades;
 
@@ -16,58 +18,91 @@ namespace Entregas.Datos
 {
     public static class ClienteDatos
     {
-        // Arreglo estático para almacenar hasta 20 clientes
-        private static Cliente[] clientes = new Cliente[20];
-        private static int clienteCount = 0;
-
-        // Agrega un nuevo cliente al arreglo, validando capacidad y unicidad de identificación.
-
+        // Inserta un nuevo cliente en la base de datos
         public static void AgregarCliente(Cliente cliente)
         {
-            if (cliente == null)
-                throw new ArgumentNullException(nameof(cliente), "El cliente no puede ser null.");
-
-            if (clienteCount >= clientes.Length)
-                throw new InvalidOperationException("No se pueden ingresar más registros");
-
-            for (int i = 0; i < clienteCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (clientes[i] != null && clientes[i].Identificacion == cliente.Identificacion)
-                    throw new InvalidOperationException("Identificación de cliente ya existe");
+                string sentencia = @"INSERT INTO Cliente 
+                    (Identificacion, Nombre, PrimerApellido, SegundoApellido, FechaNacimiento, Activo)
+                    VALUES (@Identificacion, @Nombre, @PrimerApellido, @SegundoApellido, @FechaNacimiento, @Activo)";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.CommandType = CommandType.Text;
+                    comando.Parameters.AddWithValue("@Identificacion", cliente.Identificacion);
+                    comando.Parameters.AddWithValue("@Nombre", cliente.Nombre);
+                    comando.Parameters.AddWithValue("@PrimerApellido", cliente.PrimerApellido);
+                    comando.Parameters.AddWithValue("@SegundoApellido", cliente.SegundoApellido);
+                    comando.Parameters.AddWithValue("@FechaNacimiento", cliente.FechaNacimiento.Date);
+                    comando.Parameters.AddWithValue("@Activo", cliente.Activo);
+                    comando.ExecuteNonQuery();
+                }
             }
-
-            clientes[clienteCount] = cliente;
-            clienteCount++;
         }
 
-
-        // Devuelve todos los clientes actualmente almacenados.
-
-        public static Cliente[] ObtenerTodos()
+        // Devuelve todos los clientes almacenados
+        public static List<Cliente> ObtenerTodos()
         {
-            Cliente[] copia = new Cliente[clienteCount];
-            Array.Copy(clientes, copia, clienteCount);
-            return copia;
+            List<Cliente> lista = new List<Cliente>();
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"SELECT Identificacion, Nombre, PrimerApellido, SegundoApellido, FechaNacimiento, Activo 
+                                    FROM Cliente";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Cliente
+                            {
+                                Identificacion = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                PrimerApellido = reader.GetString(2),
+                                SegundoApellido = reader.GetString(3),
+                                FechaNacimiento = reader.GetDateTime(4),
+                                Activo = reader.GetBoolean(5)
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
         }
 
-
-        // Busca un cliente por identificación.
+        // Busca un cliente por su identificación
         public static Cliente? ObtenerClientePorId(int identificacion)
         {
-            for (int i = 0; i < clienteCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (clientes[i] != null && clientes[i].Identificacion == identificacion)
-                    return clientes[i];
+                string sentencia = @"SELECT Identificacion, Nombre, PrimerApellido, SegundoApellido, FechaNacimiento, Activo 
+                                    FROM Cliente 
+                                    WHERE Identificacion = @Identificacion";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Identificacion", identificacion);
+
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Cliente
+                            {
+                                Identificacion = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                PrimerApellido = reader.GetString(2),
+                                SegundoApellido = reader.GetString(3),
+                                FechaNacimiento = reader.GetDateTime(4),
+                                Activo = reader.GetBoolean(5)
+                            };
+                        }
+                    }
+                }
             }
             return null;
-        }
-
-
-        // Devuelve la cantidad actual de clientes almacenados.
-
-        public static int ObtenerCantidad()
-        {
-            return clienteCount;
         }
     }
 }
