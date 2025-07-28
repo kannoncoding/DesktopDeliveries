@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 using Entregas.Entidades;
 
@@ -16,52 +18,135 @@ namespace Entregas.Datos
 {
     public static class PedidoDatos
     {
-        // Arreglo estático para almacenar hasta 40 pedidos
-        private static Pedido[] pedidos = new Pedido[40];
-        private static int pedidoCount = 0;
-
-        // Agrega un nuevo pedido al arreglo, validando capacidad y unicidad de número de pedido.
-        public static void AgregarPedido(Pedido pedido)
+        // Agrega un nuevo pedido a la base de datos y devuelve el NúmeroPedido generado (IDENTITY)
+        public static int AgregarPedido(Pedido pedido)
         {
-            if (pedido == null)
-                throw new ArgumentNullException(nameof(pedido), "El pedido no puede ser null.");
-
-            if (pedidoCount >= pedidos.Length)
-                throw new InvalidOperationException("No se pueden ingresar más registros");
-
-            for (int i = 0; i < pedidoCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (pedidos[i] != null && pedidos[i].NumeroPedido == pedido.NumeroPedido)
-                    throw new InvalidOperationException("El número de pedido ya existe");
+                string sentencia = @"INSERT INTO Pedido (FechaPedido, ClienteId, RepartidorId, Direccion)
+                                    VALUES (@FechaPedido, @ClienteId, @RepartidorId, @Direccion);
+                                    SELECT SCOPE_IDENTITY();";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@FechaPedido", pedido.FechaPedido.Date);
+                    comando.Parameters.AddWithValue("@ClienteId", pedido.Cliente.Identificacion);
+                    comando.Parameters.AddWithValue("@RepartidorId", pedido.Repartidor.Identificacion);
+                    comando.Parameters.AddWithValue("@Direccion", pedido.Direccion);
+
+                    // Retorna el IDENTITY generado (NúmeroPedido)
+                    int nuevoNumeroPedido = Convert.ToInt32(comando.ExecuteScalar());
+                    return nuevoNumeroPedido;
+                }
             }
-
-            pedidos[pedidoCount] = pedido;
-            pedidoCount++;
         }
 
-        // Devuelve todos los pedidos actualmente almacenados.
-        public static Pedido[] ObtenerTodosLosPedidos()
+        // Devuelve todos los pedidos actualmente almacenados (incluyendo cliente y repartidor)
+        public static List<Pedido> ObtenerTodosLosPedidos()
         {
-            Pedido[] copia = new Pedido[pedidoCount];
-            Array.Copy(pedidos, copia, pedidoCount);
-            return copia;
+            var lista = new List<Pedido>();
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"
+                    SELECT P.NumeroPedido, P.FechaPedido, 
+                        C.Identificacion, C.Nombre, C.PrimerApellido, C.SegundoApellido, C.FechaNacimiento, C.Activo,
+                        R.Identificacion, R.Nombre, R.PrimerApellido, R.SegundoApellido, R.FechaNacimiento, R.FechaContratacion, R.Activo,
+                        P.Direccion
+                    FROM Pedido P
+                    INNER JOIN Cliente C ON P.ClienteId = C.Identificacion
+                    INNER JOIN Repartidor R ON P.RepartidorId = R.Identificacion";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Pedido
+                            {
+                                NumeroPedido = reader.GetInt32(0),
+                                FechaPedido = reader.GetDateTime(1),
+                                Cliente = new Cliente
+                                {
+                                    Identificacion = reader.GetInt32(2),
+                                    Nombre = reader.GetString(3),
+                                    PrimerApellido = reader.GetString(4),
+                                    SegundoApellido = reader.GetString(5),
+                                    FechaNacimiento = reader.GetDateTime(6),
+                                    Activo = reader.GetBoolean(7)
+                                },
+                                Repartidor = new Repartidor
+                                {
+                                    Identificacion = reader.GetInt32(8),
+                                    Nombre = reader.GetString(9),
+                                    PrimerApellido = reader.GetString(10),
+                                    SegundoApellido = reader.GetString(11),
+                                    FechaNacimiento = reader.GetDateTime(12),
+                                    FechaContratacion = reader.GetDateTime(13),
+                                    Activo = reader.GetBoolean(14)
+                                },
+                                Direccion = reader.GetString(15)
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
         }
 
-        // Busca un pedido por su número de pedido.
+        // Busca un pedido por su número de pedido
         public static Pedido? ObtenerPedidoPorNumero(int numeroPedido)
         {
-            for (int i = 0; i < pedidoCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (pedidos[i] != null && pedidos[i].NumeroPedido == numeroPedido)
-                    return pedidos[i];
+                string sentencia = @"
+                    SELECT P.NumeroPedido, P.FechaPedido, 
+                        C.Identificacion, C.Nombre, C.PrimerApellido, C.SegundoApellido, C.FechaNacimiento, C.Activo,
+                        R.Identificacion, R.Nombre, R.PrimerApellido, R.SegundoApellido, R.FechaNacimiento, R.FechaContratacion, R.Activo,
+                        P.Direccion
+                    FROM Pedido P
+                    INNER JOIN Cliente C ON P.ClienteId = C.Identificacion
+                    INNER JOIN Repartidor R ON P.RepartidorId = R.Identificacion
+                    WHERE P.NumeroPedido = @NumeroPedido";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@NumeroPedido", numeroPedido);
+
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Pedido
+                            {
+                                NumeroPedido = reader.GetInt32(0),
+                                FechaPedido = reader.GetDateTime(1),
+                                Cliente = new Cliente
+                                {
+                                    Identificacion = reader.GetInt32(2),
+                                    Nombre = reader.GetString(3),
+                                    PrimerApellido = reader.GetString(4),
+                                    SegundoApellido = reader.GetString(5),
+                                    FechaNacimiento = reader.GetDateTime(6),
+                                    Activo = reader.GetBoolean(7)
+                                },
+                                Repartidor = new Repartidor
+                                {
+                                    Identificacion = reader.GetInt32(8),
+                                    Nombre = reader.GetString(9),
+                                    PrimerApellido = reader.GetString(10),
+                                    SegundoApellido = reader.GetString(11),
+                                    FechaNacimiento = reader.GetDateTime(12),
+                                    FechaContratacion = reader.GetDateTime(13),
+                                    Activo = reader.GetBoolean(14)
+                                },
+                                Direccion = reader.GetString(15)
+                            };
+                        }
+                    }
+                }
             }
             return null;
-        }
-
-        // Devuelve la cantidad actual de pedidos almacenados.
-        public static int ObtenerCantidad()
-        {
-            return pedidoCount;
         }
     }
 }

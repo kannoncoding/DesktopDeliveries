@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 using Entregas.Entidades;
 
@@ -16,55 +18,74 @@ namespace Entregas.Datos
 {
     public static class DetallePedidoDatos
     {
-        // Arreglo estático para almacenar hasta 500 detalles de pedido
-        private static DetallePedido[] detalles = new DetallePedido[500];
-        private static int detalleCount = 0;
-
-        // Agrega un nuevo detalle de pedido al arreglo, validando capacidad.
-
+        // Agrega un nuevo detalle de pedido a la base de datos
         public static void AgregarDetalle(DetallePedido detalle)
         {
-            if (detalle == null)
-                throw new ArgumentNullException(nameof(detalle), "El detalle de pedido no puede ser null.");
-
-            if (detalleCount >= detalles.Length)
-                throw new InvalidOperationException("No se pueden ingresar más registros");
-
-            detalles[detalleCount] = detalle;
-            detalleCount++;
-        }
-
-        // Devuelve todos los detalles para un pedido específico.
-        public static DetallePedido[] ObtenerDetallesPorPedido(int numeroPedido)
-        {
-            // Primero contar cuántos detalles existen para el pedido
-            int cantidad = 0;
-            for (int i = 0; i < detalleCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (detalles[i] != null && detalles[i].NumeroPedido == numeroPedido)
-                    cantidad++;
-            }
+                string sentencia = @"INSERT INTO DetallePedido 
+                    (NumeroPedido, ArticuloId, Cantidad, Monto)
+                    VALUES (@NumeroPedido, @ArticuloId, @Cantidad, @Monto)";
 
-            // Crear el arreglo de retorno
-            DetallePedido[] resultado = new DetallePedido[cantidad];
-            int idx = 0;
-            for (int i = 0; i < detalleCount; i++)
-            {
-                if (detalles[i] != null && detalles[i].NumeroPedido == numeroPedido)
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
                 {
-                    resultado[idx] = detalles[i];
-                    idx++;
+                    comando.Parameters.AddWithValue("@NumeroPedido", detalle.NumeroPedido);
+                    comando.Parameters.AddWithValue("@ArticuloId", detalle.Articulo.Id);
+                    comando.Parameters.AddWithValue("@Cantidad", detalle.Cantidad);
+                    comando.Parameters.AddWithValue("@Monto", detalle.Monto);
+                    comando.ExecuteNonQuery();
                 }
             }
-
-            return resultado;
         }
 
-        // Devuelve la cantidad actual de detalles almacenados.
-        public static int ObtenerCantidad()
+        // Devuelve todos los detalles para un pedido específico (incluyendo la información del artículo y su tipo)
+        public static List<DetallePedido> ObtenerDetallesPorPedido(int numeroPedido)
         {
-            return detalleCount;
-        }
+            var lista = new List<DetallePedido>();
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"
+                    SELECT DP.NumeroPedido, DP.ArticuloId, DP.Cantidad, DP.Monto,
+                           A.Nombre, A.TipoArticuloId, T.Nombre AS NombreTipo, T.Descripcion AS DescripcionTipo,
+                           A.Valor, A.Inventario, A.Activo
+                    FROM DetallePedido DP
+                    INNER JOIN Articulo A ON DP.ArticuloId = A.Id
+                    INNER JOIN TipoArticulo T ON A.TipoArticuloId = T.Id
+                    WHERE DP.NumeroPedido = @NumeroPedido";
 
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@NumeroPedido", numeroPedido);
+
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new DetallePedido
+                            {
+                                NumeroPedido = reader.GetInt32(0),
+                                Articulo = new Articulo
+                                {
+                                    Id = reader.GetInt32(1),
+                                    Nombre = reader.GetString(4),
+                                    TipoArticulo = new TipoArticulo
+                                    {
+                                        Id = reader.GetInt32(5),
+                                        Nombre = reader.GetString(6),
+                                        Descripcion = reader.GetString(7)
+                                    },
+                                    Valor = Convert.ToDouble(reader.GetDecimal(8)),
+                                    Inventario = reader.GetInt32(9),
+                                    Activo = reader.GetBoolean(10)
+                                },
+                                Cantidad = reader.GetInt32(2),
+                                Monto = Convert.ToDouble(reader.GetDecimal(3))
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
     }
 }
