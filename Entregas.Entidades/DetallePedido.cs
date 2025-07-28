@@ -18,6 +18,8 @@ namespace Entregas.Entidades
         // Número de pedido al que pertenece este detalle (llave foránea)
         public required int NumeroPedido { get; set; }
 
+        public int ArticuloId { get; set; } // Id de relación para BD
+
         // Referencia al artículo solicitado (debe ser seleccionado del arreglo de artículos)
         public required Articulo Articulo { get; set; }
 

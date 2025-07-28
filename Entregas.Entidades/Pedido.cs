@@ -20,6 +20,9 @@ namespace Entregas.Entidades
         // Fecha del pedido (debe ser igual o posterior a la fecha actual; validación en lógica)
         public required DateTime FechaPedido { get; set; }
 
+        public int ClienteId { get; set; } // Id de relación para BD
+        public int RepartidorId { get; set; } // Id de relación para BD
+
         // Referencia al cliente que realiza el pedido
         public required Cliente Cliente { get; set; }
 

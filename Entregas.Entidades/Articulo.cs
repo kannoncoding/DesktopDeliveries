@@ -17,11 +17,17 @@ namespace Entregas.Entidades
         // Identificador único para cada artículo
         public int Id { get; set; }
 
+
         // Nombre del artículo
         public required string Nombre { get; set; }
 
+
+        public int TipoArticuloId { get; set; } // Id de relación para BD
+
         // Referencia al objeto TipoArticulo (debe seleccionarse de los tipos existentes)
         public required TipoArticulo TipoArticulo { get; set; }
+
+
 
         // Precio del artículo (debe ser numérico)
         public double Valor { get; set; }
