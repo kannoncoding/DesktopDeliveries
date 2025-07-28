@@ -19,7 +19,7 @@ namespace Entregas.Datos
     {
         // Obtiene la cadena de conexión desde App.config
         private static readonly string cadenaConexion =
-            System.Configuration.ConfigurationManager.ConnectionStrings["EntregasBD"].ConnectionString;
+            System.Configuration.ConfigurationManager.ConnectionStrings["BD_Entregas"].ConnectionString;
 
         // Método para obtener una conexión abierta
         public static SqlConnection ObtenerConexion()
