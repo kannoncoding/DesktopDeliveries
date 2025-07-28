@@ -85,7 +85,7 @@ namespace Entregas.Datos
         }
 
         // Busca un artículo por su ID
-        public static Articulo? ObtenerArticuloPorId(int id)
+        public static Articulo? ObtenerPorId(int id)
         {
             using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
@@ -124,5 +124,27 @@ namespace Entregas.Datos
             }
             return null;
         }
+
+        // Actualiza el inventario y el estado (activo) de un artículo en la base de datos
+        public static void ActualizarInventarioYEstado(int articuloId, int nuevoInventario, bool activo)
+        {
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"
+            UPDATE Articulo
+            SET Inventario = @Inventario, Activo = @Activo
+            WHERE Id = @Id";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Inventario", nuevoInventario);
+                    comando.Parameters.AddWithValue("@Activo", activo);
+                    comando.Parameters.AddWithValue("@Id", articuloId);
+
+                    comando.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

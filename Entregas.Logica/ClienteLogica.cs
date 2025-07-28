@@ -17,22 +17,25 @@ namespace Entregas.Logica
 {
     public static class ClienteLogica
     {
-        // Registra un nuevo cliente, validando datos y traduciendo excepciones en mensajes amigables.
+        // Registra un nuevo cliente, validando datos y reglas de negocio.
         public static string RegistrarCliente(int id, string nombre, string ap1, string ap2, DateTime fechaNac, bool activo)
         {
-            // Validar que los campos de nombre y apellidos no estén vacíos
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(ap1) || string.IsNullOrWhiteSpace(ap2))
-                return "Todos los campos de nombre y apellidos son requeridos.";
-
-            // Validar que la fecha de nacimiento no sea futura
-            if (fechaNac.Date > DateTime.Today)
-                return "La fecha de nacimiento no puede ser posterior a hoy.";
-
-            // Validar que el ID sea positivo
+            // Validar campos obligatorios
             if (id <= 0)
                 return "El Id debe ser un número positivo.";
 
-            // Intentar agregar el cliente a la capa de datos
+            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(ap1) || string.IsNullOrWhiteSpace(ap2))
+                return "Todos los campos de nombre y apellidos son requeridos.";
+
+            if (fechaNac.Date > DateTime.Today)
+                return "La fecha de nacimiento no puede ser posterior a hoy.";
+
+            // Validar unicidad de ID
+            var existente = ClienteDatos.ObtenerPorId(id);
+            if (existente != null)
+                return "Ya existe un Cliente con ese Id.";
+
+            // Construir y registrar el cliente
             try
             {
                 Cliente nuevoCliente = new Cliente
@@ -49,25 +52,68 @@ namespace Entregas.Logica
 
                 return "El registro se ha ingresado correctamente.";
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                if (ex.Message.Contains("límite"))
-                    return "No se pueden ingresar más registros, límite de clientes alcanzado.";
-                else if (ex.Message.Contains("ya existe"))
-                    return "El Id de Cliente ya existe.";
-                else
-                    return "Ocurrió un error al registrar el cliente.";
-            }
-            catch (Exception)
-            {
-                return "Ocurrió un error inesperado al registrar el cliente.";
+                return $"Ocurrió un error al registrar el cliente: {ex.Message}";
             }
         }
 
-        // Devuelve todos los clientes registrados actualmente.
-        public static Cliente[] ObtenerTodos()
+        // Devuelve todos los clientes registrados
+        public static List<Cliente> ObtenerTodos()
         {
-            return ClienteDatos.ObtenerTodos();
+            try
+            {
+                return ClienteDatos.ObtenerTodos();
+            }
+            catch
+            {
+                return new List<Cliente>();
+            }
         }
+
+        // Devuelve un cliente específico por ID
+        public static Cliente ObtenerPorId(int id)
+        {
+            try
+            {
+                return ClienteDatos.ObtenerPorId(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        /* COMMENT OUT FOR FUTURE TEST
+        // Actualizar un cliente existente
+        public static string ActualizarCliente(Cliente cliente)
+        {
+            try
+            {
+                ClienteDatos.ActualizarCliente(cliente);
+                return "El cliente fue actualizado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al actualizar: {ex.Message}";
+            }
+        }
+
+        // Eliminar un cliente por ID
+        public static string EliminarCliente(int id)
+        {
+            try
+            {
+                ClienteDatos.EliminarCliente(id);
+                return "El cliente fue eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al eliminar: {ex.Message}";
+            }
+        } */
+        // END COMMENT OUT
     }
+
 }

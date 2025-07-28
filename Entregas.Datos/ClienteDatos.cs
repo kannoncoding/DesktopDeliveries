@@ -73,7 +73,7 @@ namespace Entregas.Datos
         }
 
         // Busca un cliente por su identificación
-        public static Cliente? ObtenerClientePorId(int identificacion)
+        public static Cliente? ObtenerPorId(int identificacion)
         {
             using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {

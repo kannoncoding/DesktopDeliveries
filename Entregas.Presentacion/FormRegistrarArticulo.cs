@@ -44,7 +44,7 @@ namespace Entregas.Presentacion
                 // Poblar cmbTipoArticulo con los tipos existentes
                 cmbTipoArticulo.Items.Clear();
                 var tipos = Entregas.Logica.TipoArticuloLogica.ObtenerTodos();
-                if (tipos == null || tipos.Length == 0)
+                if (tipos == null || tipos.Count == 0)
                 {
                     MessageBox.Show("Debe registrar al menos un Tipo de Artículo antes de agregar artículos.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     btnRegistrar.Enabled = false;

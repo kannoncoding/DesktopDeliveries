@@ -74,7 +74,7 @@ namespace Entregas.Datos
         }
 
         // Busca un repartidor por identificación
-        public static Repartidor? ObtenerRepartidorPorId(int identificacion)
+        public static Repartidor? ObtenerPorId(int identificacion)
         {
             using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {

@@ -17,21 +17,21 @@ namespace Entregas.Logica
 {
     public static class TipoArticuloLogica
     {
-        // Registra un nuevo tipo de artículo, validando datos y traduciendo excepciones en mensajes amigables.
+        // Registra un nuevo tipo de artículo, validando datos y reglas de negocio.
         public static string RegistrarTipoArticulo(int id, string nombre, string descripcion)
         {
-            // Validaciones de negocio
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(descripcion))
-            {
-                return "Todos los campos son requeridos.";
-            }
-
             if (id <= 0)
-            {
                 return "El Id debe ser un número positivo.";
-            }
 
-            // Intentar agregar el tipo a la capa de datos
+            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(descripcion))
+                return "Todos los campos son requeridos.";
+
+            // Validar unicidad de ID
+            var existente = TipoArticuloDatos.ObtenerPorId(id);
+            if (existente != null)
+                return "Ya existe un Tipo de Artículo con ese Id.";
+
+            // Registrar en la base de datos
             try
             {
                 TipoArticulo nuevoTipo = new TipoArticulo
@@ -44,34 +44,67 @@ namespace Entregas.Logica
 
                 return "El registro se ha ingresado correctamente.";
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                // Mensajes claros para los errores conocidos
-                if (ex.Message.Contains("límite"))
-                {
-                    return "No se pueden ingresar más registros (límite alcanzado).";
-                }
-                else if (ex.Message.Contains("ya existe"))
-                {
-                    return "El Id de Tipo de Artículo ya existe, ingrese uno diferente.";
-                }
-                else
-                {
-                    // Cualquier otro error técnico, se da un mensaje genérico
-                    return "Ocurrió un error al registrar el tipo de artículo.";
-                }
-            }
-            catch (Exception)
-            {
-                // Fallback genérico para otros errores no previstos
-                return "Ocurrió un error inesperado al registrar el tipo de artículo.";
+                return $"Ocurrió un error al registrar el tipo de artículo: {ex.Message}";
             }
         }
 
-        // Devuelve todos los tipos de artículo registrados.
-        public static TipoArticulo[] ObtenerTodos()
+        // Devuelve todos los tipos de artículo registrados
+        public static List<TipoArticulo> ObtenerTodos()
         {
-            return TipoArticuloDatos.ObtenerTodos();
+            try
+            {
+                return TipoArticuloDatos.ObtenerTodos();
+            }
+            catch
+            {
+                return new List<TipoArticulo>();
+            }
         }
+
+        // Devuelve un tipo de artículo por su ID
+        public static TipoArticulo ObtenerPorId(int id)
+        {
+            try
+            {
+                return TipoArticuloDatos.ObtenerPorId(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // COMMENT OUT FOR FUTURE TEST
+        /*
+        // Actualizar un tipo de artículo existente (opcional)
+        public static string ActualizarTipoArticulo(TipoArticulo tipo)
+        {
+            try
+            {
+                TipoArticuloDatos.ActualizarTipoArticulo(tipo);
+                return "El tipo de artículo fue actualizado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al actualizar: {ex.Message}";
+            }
+        }
+
+        // Eliminar un tipo de artículo por ID (opcional)
+        public static string EliminarTipoArticulo(int id)
+        {
+            try
+            {
+                TipoArticuloDatos.EliminarTipoArticulo(id);
+                return "El tipo de artículo fue eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al eliminar: {ex.Message}";
+            }
+        } */
+        //COMMENT OUT END
     }
 }

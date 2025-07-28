@@ -17,10 +17,13 @@ namespace Entregas.Logica
 {
     public static class ArticuloLogica
     {
-        // Registra un nuevo artículo, validando datos y traduciendo excepciones en mensajes amigables.
+        // Registra un nuevo artículo, validando datos y reglas de negocio.
         public static string RegistrarArticulo(int id, string nombre, TipoArticulo tipo, string valorStr, string inventarioStr, bool activo)
         {
             // Validar campos obligatorios
+            if (id <= 0)
+                return "El Id debe ser un número positivo.";
+
             if (string.IsNullOrWhiteSpace(nombre))
                 return "El nombre del artículo es requerido.";
 
@@ -35,17 +38,24 @@ namespace Entregas.Logica
             if (!int.TryParse(inventarioStr, out int inventario) || inventario < 0)
                 return "El inventario debe ser un número entero positivo o cero.";
 
-            if (id <= 0)
-                return "El Id debe ser un número positivo.";
+            // Validar unicidad de ID
+            var existente = ArticuloDatos.ObtenerPorId(id);
+            if (existente != null)
+                return "Ya existe un Artículo con ese Id.";
 
-            // Intentar agregar el artículo a la capa de datos
+            // Validar existencia del tipo de artículo en BD
+            var tipoEnBD = TipoArticuloDatos.ObtenerPorId(tipo.Id);
+            if (tipoEnBD == null)
+                return "El Tipo de Artículo seleccionado no existe en la base de datos.";
+
+            // Construir y registrar el artículo
             try
             {
                 Articulo nuevoArticulo = new Articulo
                 {
                     Id = id,
                     Nombre = nombre.Trim(),
-                    TipoArticulo = tipo,
+                    TipoArticulo = tipoEnBD,
                     Valor = valor,
                     Inventario = inventario,
                     Activo = activo
@@ -55,25 +65,61 @@ namespace Entregas.Logica
 
                 return "El registro se ha ingresado correctamente.";
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                if (ex.Message.Contains("límite"))
-                    return "No se pueden ingresar más registros, límite de artículos alcanzado.";
-                else if (ex.Message.Contains("ya existe"))
-                    return "El Id de Artículo ya existe.";
-                else
-                    return "Ocurrió un error al registrar el artículo.";
-            }
-            catch (Exception)
-            {
-                return "Ocurrió un error inesperado al registrar el artículo.";
+                return $"Ocurrió un error al registrar el artículo: {ex.Message}";
             }
         }
 
-        // Devuelve todos los artículos registrados.
-        public static Articulo[] ObtenerTodos()
+        // Devuelve todos los artículos registrados
+        public static List<Articulo> ObtenerTodos()
         {
-            return ArticuloDatos.ObtenerTodos();
+            try
+            {
+                return ArticuloDatos.ObtenerTodos();
+            }
+            catch
+            {
+                return new List<Articulo>();
+            }
         }
+
+        // Devuelve un artículo específico por ID
+        public static Articulo ObtenerPorId(int id)
+        {
+            try
+            {
+                return ArticuloDatos.ObtenerPorId(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        //COMMENTED OUT TEMPOR
+        /* 
+        // Actualizar un artículo existente
+        public static string ActualizarArticulo(Articulo articulo)
+        {
+            // Validaciones similares a registrar...
+            // (Puedes agregar según tu diseño)
+            return ArticuloDatos.ActualizarArticulo(articulo);
+        }
+
+        // Eliminar un artículo por ID (opcional según requisitos)
+        public static string EliminarArticulo(int id)
+        {
+            try
+            {
+                ArticuloDatos.EliminarArticulo(id);
+                return "El artículo fue eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al eliminar: {ex.Message}";
+            }
+        } */
+        //END COMMENTED OUT
     }
 }
