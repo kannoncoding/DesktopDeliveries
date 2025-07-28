@@ -10,52 +10,85 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entregas.Entidades;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace Entregas.Datos
 {
     public static class TipoArticuloDatos
     {
-        // Arreglo estático de 10 posiciones para almacenar tipos de artículo
-        private static TipoArticulo[] tipos = new TipoArticulo[10];
-        private static int tipoCount = 0;
-
-
-        // Agrega un nuevo tipo de artículo al arreglo, validando capacidad y unicidad de ID.
-
+        // Agrega un nuevo tipo de artículo a la base de datos
         public static void AgregarTipoArticulo(TipoArticulo tipo)
         {
-            if (tipo == null)
-                throw new ArgumentNullException(nameof(tipo), "El tipo de artículo no puede ser null.");
-
-            if (tipoCount >= tipos.Length)
-                throw new InvalidOperationException("No se pueden ingresar más registros");
-
-            for (int i = 0; i < tipoCount; i++)
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
             {
-                if (tipos[i] != null && tipos[i].Id == tipo.Id)
-                    throw new InvalidOperationException("ID ya existe");
+                string sentencia = @"INSERT INTO TipoArticulo
+                    (Id, Nombre, Descripcion)
+                    VALUES (@Id, @Nombre, @Descripcion)";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Id", tipo.Id);
+                    comando.Parameters.AddWithValue("@Nombre", tipo.Nombre);
+                    comando.Parameters.AddWithValue("@Descripcion", tipo.Descripcion);
+                    comando.ExecuteNonQuery();
+                }
             }
-
-            tipos[tipoCount] = tipo;
-            tipoCount++;
         }
 
-
-        // Devuelve todos los tipos de artículo actualmente almacenados.
-
-        public static TipoArticulo[] ObtenerTodos()
+        // Devuelve todos los tipos de artículo actualmente almacenados
+        public static List<TipoArticulo> ObtenerTodos()
         {
-            TipoArticulo[] copia = new TipoArticulo[tipoCount];
-            Array.Copy(tipos, copia, tipoCount);
-            return copia;
+            var lista = new List<TipoArticulo>();
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"SELECT Id, Nombre, Descripcion FROM TipoArticulo";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new TipoArticulo
+                            {
+                                Id = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                Descripcion = reader.GetString(2)
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
         }
 
-
-        // Devuelve la cantidad actual de tipos almacenados.
-
-        public static int ObtenerCantidad()
+        // Busca un tipo de artículo por su Id
+        public static TipoArticulo? ObtenerPorId(int id)
         {
-            return tipoCount;
+            using (SqlConnection conexion = ConexionBD.ObtenerConexion())
+            {
+                string sentencia = @"SELECT Id, Nombre, Descripcion FROM TipoArticulo WHERE Id = @Id";
+
+                using (SqlCommand comando = new SqlCommand(sentencia, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Id", id);
+
+                    using (SqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new TipoArticulo
+                            {
+                                Id = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                Descripcion = reader.GetString(2)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }
