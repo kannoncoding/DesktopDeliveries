@@ -46,7 +46,6 @@
             consultarPedidosToolStripMenuItem = new ToolStripMenuItem();
             txtBitacora = new TextBox();
             lblClientesConectados = new Label();
-            tiposArticuloToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -61,7 +60,7 @@
             // 
             // tipoArticuloToolStripMenuItem
             // 
-            tipoArticuloToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { registrarTipoArticuloToolStripMenuItem, consultarTiposDeArticuloToolStripMenuItem, tiposArticuloToolStripMenuItem });
+            tipoArticuloToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { registrarTipoArticuloToolStripMenuItem, consultarTiposDeArticuloToolStripMenuItem });
             tipoArticuloToolStripMenuItem.Name = "tipoArticuloToolStripMenuItem";
             tipoArticuloToolStripMenuItem.Size = new Size(93, 20);
             tipoArticuloToolStripMenuItem.Text = "Tipos Articulo";
@@ -90,14 +89,14 @@
             // registrarArticuloToolStripMenuItem
             // 
             registrarArticuloToolStripMenuItem.Name = "registrarArticuloToolStripMenuItem";
-            registrarArticuloToolStripMenuItem.Size = new Size(180, 22);
+            registrarArticuloToolStripMenuItem.Size = new Size(175, 22);
             registrarArticuloToolStripMenuItem.Text = "Registrar Articulo";
             registrarArticuloToolStripMenuItem.Click += registrarArticuloToolStripMenuItem_Click;
             // 
             // consultarArticulosToolStripMenuItem
             // 
             consultarArticulosToolStripMenuItem.Name = "consultarArticulosToolStripMenuItem";
-            consultarArticulosToolStripMenuItem.Size = new Size(180, 22);
+            consultarArticulosToolStripMenuItem.Size = new Size(175, 22);
             consultarArticulosToolStripMenuItem.Text = "Consultar Articulos";
             consultarArticulosToolStripMenuItem.Click += consultarArticuloToolStripMenuItem_Click;
             // 
@@ -132,14 +131,14 @@
             // registrarClienteToolStripMenuItem
             // 
             registrarClienteToolStripMenuItem.Name = "registrarClienteToolStripMenuItem";
-            registrarClienteToolStripMenuItem.Size = new Size(180, 22);
+            registrarClienteToolStripMenuItem.Size = new Size(170, 22);
             registrarClienteToolStripMenuItem.Text = "Registrar Cliente";
             registrarClienteToolStripMenuItem.Click += registrarClienteToolStripMenuItem_Click;
             // 
             // consultarClientesToolStripMenuItem
             // 
             consultarClientesToolStripMenuItem.Name = "consultarClientesToolStripMenuItem";
-            consultarClientesToolStripMenuItem.Size = new Size(180, 22);
+            consultarClientesToolStripMenuItem.Size = new Size(170, 22);
             consultarClientesToolStripMenuItem.Text = "Consultar Clientes";
             consultarClientesToolStripMenuItem.Click += consultarClienteToolStripMenuItem_Click;
             // 
@@ -153,14 +152,14 @@
             // registrarPedidoToolStripMenuItem
             // 
             registrarPedidoToolStripMenuItem.Name = "registrarPedidoToolStripMenuItem";
-            registrarPedidoToolStripMenuItem.Size = new Size(180, 22);
+            registrarPedidoToolStripMenuItem.Size = new Size(170, 22);
             registrarPedidoToolStripMenuItem.Text = "Registrar Pedido";
             registrarPedidoToolStripMenuItem.Click += registrarPedidoToolStripMenuItem_Click;
             // 
             // consultarPedidosToolStripMenuItem
             // 
             consultarPedidosToolStripMenuItem.Name = "consultarPedidosToolStripMenuItem";
-            consultarPedidosToolStripMenuItem.Size = new Size(180, 22);
+            consultarPedidosToolStripMenuItem.Size = new Size(170, 22);
             consultarPedidosToolStripMenuItem.Text = "Consultar Pedidos";
             consultarPedidosToolStripMenuItem.Click += consultarPedidoToolStripMenuItem_Click;
             // 
@@ -183,12 +182,6 @@
             lblClientesConectados.Size = new Size(125, 15);
             lblClientesConectados.TabIndex = 2;
             lblClientesConectados.Text = "Clientes conectados: 0";
-            // 
-            // tiposArticuloToolStripMenuItem
-            // 
-            tiposArticuloToolStripMenuItem.Name = "tiposArticuloToolStripMenuItem";
-            tiposArticuloToolStripMenuItem.Size = new Size(218, 22);
-            tiposArticuloToolStripMenuItem.Text = "Tipos Articulo";
             // 
             // FormMenuPrincipal
             // 
@@ -235,7 +228,6 @@
 
         private System.Windows.Forms.TextBox txtBitacora;
         private System.Windows.Forms.Label lblClientesConectados;
-        private ToolStripMenuItem tiposArticuloToolStripMenuItem;
     }
 
 
