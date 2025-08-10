@@ -175,6 +175,29 @@
             menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
+
+            //actualizacion de controles START
+
+            // txtBitacora
+            this.txtBitacora = new System.Windows.Forms.TextBox();
+            this.txtBitacora.Multiline = true;
+            this.txtBitacora.ReadOnly = true;
+            this.txtBitacora.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtBitacora.Location = new System.Drawing.Point(12, 40);
+            this.txtBitacora.Size = new System.Drawing.Size(760, 200);
+            this.txtBitacora.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            this.Controls.Add(this.txtBitacora);
+
+            // lblClientesConectados
+            this.lblClientesConectados = new System.Windows.Forms.Label();
+            this.lblClientesConectados.Text = "Clientes conectados: 0";
+            this.lblClientesConectados.Location = new System.Drawing.Point(12, 250);
+            this.lblClientesConectados.AutoSize = true;
+            this.Controls.Add(this.lblClientesConectados);
+
+
+            //actualizacion de controles END
+
         }
 
         #endregion
@@ -195,5 +218,15 @@
         private ToolStripMenuItem consultarClientesToolStripMenuItem;
         private ToolStripMenuItem registrarPedidoToolStripMenuItem;
         private ToolStripMenuItem consultarPedidosToolStripMenuItem;
+
+        //actualizacion declaraciones
+
+        private System.Windows.Forms.TextBox txtBitacora;
+        private System.Windows.Forms.Label lblClientesConectados;
+
+
     }
+
+
+
 }
