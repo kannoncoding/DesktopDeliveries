@@ -44,6 +44,9 @@
             pedidoToolStripMenuItem = new ToolStripMenuItem();
             registrarPedidoToolStripMenuItem = new ToolStripMenuItem();
             consultarPedidosToolStripMenuItem = new ToolStripMenuItem();
+            txtBitacora = new TextBox();
+            lblClientesConectados = new Label();
+            tiposArticuloToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -58,7 +61,7 @@
             // 
             // tipoArticuloToolStripMenuItem
             // 
-            tipoArticuloToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { registrarTipoArticuloToolStripMenuItem, consultarTiposDeArticuloToolStripMenuItem });
+            tipoArticuloToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { registrarTipoArticuloToolStripMenuItem, consultarTiposDeArticuloToolStripMenuItem, tiposArticuloToolStripMenuItem });
             tipoArticuloToolStripMenuItem.Name = "tipoArticuloToolStripMenuItem";
             tipoArticuloToolStripMenuItem.Size = new Size(93, 20);
             tipoArticuloToolStripMenuItem.Text = "Tipos Articulo";
@@ -161,12 +164,40 @@
             consultarPedidosToolStripMenuItem.Text = "Consultar Pedidos";
             consultarPedidosToolStripMenuItem.Click += consultarPedidoToolStripMenuItem_Click;
             // 
+            // txtBitacora
+            // 
+            txtBitacora.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtBitacora.Location = new Point(12, 40);
+            txtBitacora.Multiline = true;
+            txtBitacora.Name = "txtBitacora";
+            txtBitacora.ReadOnly = true;
+            txtBitacora.ScrollBars = ScrollBars.Vertical;
+            txtBitacora.Size = new Size(760, 200);
+            txtBitacora.TabIndex = 1;
+            // 
+            // lblClientesConectados
+            // 
+            lblClientesConectados.AutoSize = true;
+            lblClientesConectados.Location = new Point(12, 250);
+            lblClientesConectados.Name = "lblClientesConectados";
+            lblClientesConectados.Size = new Size(125, 15);
+            lblClientesConectados.TabIndex = 2;
+            lblClientesConectados.Text = "Clientes conectados: 0";
+            // 
+            // tiposArticuloToolStripMenuItem
+            // 
+            tiposArticuloToolStripMenuItem.Name = "tiposArticuloToolStripMenuItem";
+            tiposArticuloToolStripMenuItem.Size = new Size(218, 22);
+            tiposArticuloToolStripMenuItem.Text = "Tipos Articulo";
+            // 
             // FormMenuPrincipal
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(menuStrip1);
+            Controls.Add(txtBitacora);
+            Controls.Add(lblClientesConectados);
             MainMenuStrip = menuStrip1;
             Name = "FormMenuPrincipal";
             Text = "FormMenuPrincipal";
@@ -175,25 +206,6 @@
             menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
-
-            //actualizacion de controles START
-
-            // txtBitacora
-            this.txtBitacora = new System.Windows.Forms.TextBox();
-            this.txtBitacora.Multiline = true;
-            this.txtBitacora.ReadOnly = true;
-            this.txtBitacora.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtBitacora.Location = new System.Drawing.Point(12, 40);
-            this.txtBitacora.Size = new System.Drawing.Size(760, 200);
-            this.txtBitacora.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            this.Controls.Add(this.txtBitacora);
-
-            // lblClientesConectados
-            this.lblClientesConectados = new System.Windows.Forms.Label();
-            this.lblClientesConectados.Text = "Clientes conectados: 0";
-            this.lblClientesConectados.Location = new System.Drawing.Point(12, 250);
-            this.lblClientesConectados.AutoSize = true;
-            this.Controls.Add(this.lblClientesConectados);
 
 
             //actualizacion de controles END
@@ -223,8 +235,7 @@
 
         private System.Windows.Forms.TextBox txtBitacora;
         private System.Windows.Forms.Label lblClientesConectados;
-
-
+        private ToolStripMenuItem tiposArticuloToolStripMenuItem;
     }
 
 
