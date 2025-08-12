@@ -3,22 +3,23 @@
 // Programación Avanzada con C# - Proyecto 1
 // Jorge Luis Arias Melendez
 
+using Entregas.Datos;
+using Entregas.Entidades;
+using Entregas.Logica;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using Entregas.Entidades;
-using Entregas.Datos;
-using Entregas.Logica;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace Entregas.Presentacion
 {
@@ -245,6 +246,7 @@ namespace Entregas.Presentacion
 
                                     res = MensajeRespuesta.Ok(ClienteDto.FromEntidad(cliEnt), req.CorrelationId);
                                     EscribirBitacora($"[Validación] Cliente OK: {cliEnt.Identificacion} - {cliEnt.Nombre} {cliEnt.PrimerApellido}");
+                                    LogResultado("validar_cliente", true, $"id={cliEnt.Identificacion}");
                                     break;
                                 }
 
@@ -262,6 +264,7 @@ namespace Entregas.Presentacion
 
                                     res = MensajeRespuesta.Ok(lista, req.CorrelationId);
                                     EscribirBitacora($"[Consulta] listar_articulos_activos -> {lista.Count} ítems");
+                                    LogResultado("listar_articulos_activos", true, $"items={lista.Count}");
                                     break;
                                 }
 
@@ -361,6 +364,7 @@ namespace Entregas.Presentacion
 
                                     res = MensajeRespuesta.Ok(salida, req.CorrelationId);
                                     EscribirBitacora($"[Registro] Pedido #{sol.NumeroPedido} de cliente {cliEnt.Identificacion} con {detsDto.Count} detalle(s).");
+                                    LogResultado("registrar_pedido", true, $"pedidoId={sol.NumeroPedido}, det={detsDto.Count}");
                                     break;
                                 }
 
@@ -387,6 +391,7 @@ namespace Entregas.Presentacion
 
                                     res = MensajeRespuesta.Ok(listaEnc, req.CorrelationId);
                                     EscribirBitacora($"[Consulta] pedidos de cliente {clienteId} -> {listaEnc.Count}");
+                                    LogResultado("consultar_pedidos_cliente", true, $"clienteId={clienteId}, items={listaEnc.Count}");
                                     break;
                                 }
 
@@ -414,19 +419,23 @@ namespace Entregas.Presentacion
 
                                     res = MensajeRespuesta.Ok(dto, req.CorrelationId);
                                     EscribirBitacora($"[Consulta] pedido #{numero} -> {dto.Detalles.Count} detalle(s)");
+                                    LogResultado("consultar_pedido_por_numero", true, $"pedidoId={numero}, det={dto.Detalles.Count}");
                                     break;
                                 }
 
 
 
                             default:
-                                res = MensajeRespuesta.Fail("Comando no soportado", req.CorrelationId);
+                                res = MensajeRespuesta.Fail("Comando no soportado.", req.CorrelationId);
+                                LogResultado(req.Comando ?? "?", false, "no soportado");
                                 break;
+
                         }
                     }
                     catch (Exception exCmd)
                     {
                         res = MensajeRespuesta.Fail(exCmd.Message, req.CorrelationId);
+                        LogResultado(req.Comando ?? "?", false, exCmd.Message);
                     }
 
                     await writer.WriteAsync(JsonMensajeria.SerializarRespuestaLinea(res));
@@ -469,6 +478,13 @@ namespace Entregas.Presentacion
                 lblClientesConectados.Text = $"Clientes conectados: {clientesConectados}";
             }
         }
+
+        private void LogResultado(string comando, bool exito, string detalle = "")
+        {
+            var estado = exito ? "OK" : "ERR";
+            EscribirBitacora($"[{estado}] {comando} {detalle}".Trim());
+        }
+
 
         private void FormMenuPrincipal_Load(object sender, EventArgs e)
         {
