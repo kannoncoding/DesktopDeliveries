@@ -14,6 +14,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Entregas.Entidades;
+using Entregas.Datos;
+using Entregas.Logica;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -183,6 +185,8 @@ namespace Entregas.Presentacion
             string clienteIP = cliente.Client.RemoteEndPoint?.ToString() ?? "Cliente desconocido";
             EscribirBitacora($"Cliente conectado: {clienteIP}");
 
+
+
             try
             {
                 using var stream = cliente.GetStream();
@@ -213,35 +217,206 @@ namespace Entregas.Presentacion
 
                     try
                     {
+                        res = MensajeRespuesta.Fail("Comando no soportado", req.CorrelationId);
+
+
                         switch (req.Comando?.ToLowerInvariant())
                         {
                             case "ping":
                                 res = MensajeRespuesta.Ok(new { message = "pong" }, req.CorrelationId);
                                 break;
 
+                            // ----------------------------------------------
+                            // VALIDAR CLIENTE (cliente se loguea en el cliente)
+                            // req.Datos: { "id": 123 }
+                            // res.Datos: ClienteDto
+                            // ----------------------------------------------
+                            case "validar_cliente":
+                                {
+                                    if (!req.TryGetDato<int>("id", out var id))
+                                        throw new InvalidOperationException("Faltan datos: { id }");
+
+                                    var cliEnt = ClienteDatos.ObtenerPorId(id);
+                                    if (cliEnt == null || !cliEnt.Activo)
+                                    {
+                                        res = MensajeRespuesta.Fail("Cliente no existe o está inactivo.", req.CorrelationId);
+                                        break;
+                                    }
+
+                                    res = MensajeRespuesta.Ok(ClienteDto.FromEntidad(cliEnt), req.CorrelationId);
+                                    EscribirBitacora($"[Validación] Cliente OK: {cliEnt.Identificacion} - {cliEnt.Nombre} {cliEnt.PrimerApellido}");
+                                    break;
+                                }
+
+
+                            // ----------------------------------------------
+                            // LISTAR ARTÍCULOS ACTIVOS (ya lo tenías; dejo versión DTO)
+                            // res.Datos: List<ArticuloDto>
+                            // ----------------------------------------------
                             case "listar_articulos_activos":
                                 {
-                                    var lista = Entregas.Datos.ArticuloDatos.ObtenerTodos()
+                                    var lista = ArticuloDatos.ObtenerTodos()
                                         .Where(a => a != null && a.Activo)
                                         .Select(a => ArticuloDto.FromEntidad(a!))
                                         .ToList();
 
                                     res = MensajeRespuesta.Ok(lista, req.CorrelationId);
+                                    EscribirBitacora($"[Consulta] listar_articulos_activos -> {lista.Count} ítems");
+                                    break;
                                 }
-                                break;
 
+                            // ----------------------------------------------
+                            // OBTENER ARTÍCULO POR ID (ya lo tenías; dejo versión DTO)
+                            // req.Datos: { "id": 200 }
+                            // res.Datos: ArticuloDto
+                            // ----------------------------------------------
                             case "obtener_articulo_por_id":
                                 {
-                                    
                                     if (!req.TryGetDato<int>("id", out var id))
                                         throw new InvalidOperationException("Faltan datos: { id }");
 
-                                    var art = Entregas.Datos.ArticuloDatos.ObtenerPorId(id);
-                                    if (art == null) throw new InvalidOperationException("No existe el artículo");
+                                    var art = ArticuloDatos.ObtenerPorId(id);
+                                    if (art == null)
+                                    {
+                                        res = MensajeRespuesta.Fail("No existe el artículo", req.CorrelationId);
+                                        break;
+                                    }
 
                                     res = MensajeRespuesta.Ok(ArticuloDto.FromEntidad(art), req.CorrelationId);
+                                    EscribirBitacora($"[Consulta] obtener_articulo_por_id -> {id}");
+                                    break;
                                 }
-                                break;
+
+                            // ----------------------------------------------
+                            // REGISTRAR PEDIDO (encabezado + detalles)
+                            // req.Datos: PedidoSolicitudDto (con NumeroPedido, FechaPedido,
+                            //            ClienteId, RepartidorId, Direccion, Items[])
+                            // res.Datos: PedidoCompletoDto
+                            // ----------------------------------------------
+                            case "registrar_pedido":
+                                {
+                                    var sol = req.GetDatos<PedidoSolicitudDto>();
+                                    sol.ValidarTodo(); // <<-- este es el correcto
+
+                                    // Entidades base
+                                    var cliEnt = ClienteDatos.ObtenerPorId(sol.ClienteId)
+                                               ?? throw new InvalidOperationException("Cliente no existe.");
+                                    var repEnt = RepartidorDatos.ObtenerPorId(sol.RepartidorId)
+                                               ?? throw new InvalidOperationException("Repartidor no existe.");
+
+                                    // 1) Encabezado
+                                    var msgEnc = PedidoLogica.RegistrarPedido(
+                                        sol.NumeroPedido,
+                                        sol.FechaPedido,
+                                        cliEnt,
+                                        repEnt,
+                                        sol.Direccion ?? string.Empty
+                                    );
+
+                                    if (!msgEnc.Contains("correctamente", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        res = MensajeRespuesta.Fail(msgEnc, req.CorrelationId);
+                                        break;
+                                    }
+
+                                    // 2) Detalles
+                                    foreach (var it in sol.Items)
+                                    {
+                                        it.Validar();
+
+                                        var art = ArticuloDatos.ObtenerPorId(it.ArticuloId);
+                                        if (art == null)
+                                        {
+                                            res = MensajeRespuesta.Fail($"Artículo {it.ArticuloId} no existe.", req.CorrelationId);
+                                            break;
+                                        }
+
+                                        var msgDet = PedidoLogica.AgregarDetalleAPedido(sol.NumeroPedido, art, it.Cantidad);
+                                        if (!msgDet.Contains("correctamente", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            res = MensajeRespuesta.Fail(msgDet, req.CorrelationId);
+                                            break;
+                                        }
+                                    }
+                                    if (!res.Exito) break; // si falló algún detalle
+
+                                    // 3) Construir DTO de salida
+                                    var dets = PedidoLogica.ObtenerDetallesPorPedido(sol.NumeroPedido);
+                                    var detsDto = dets.Select(PedidoDetalleDto.FromEntidad).ToList();
+                                    var total = detsDto.Sum(d => d.Monto);
+
+                                    var encDto = new PedidoEncabezadoDto
+                                    {
+                                        PedidoId = sol.NumeroPedido,
+                                        FechaPedido = sol.FechaPedido,
+                                        Direccion = sol.Direccion ?? string.Empty,
+                                        ClienteId = cliEnt.Identificacion,
+                                        ClienteNombre = $"{cliEnt.Nombre} {cliEnt.PrimerApellido} {cliEnt.SegundoApellido}".Trim(),
+                                        RepartidorId = repEnt.Identificacion,
+                                        RepartidorNombre = $"{repEnt.Nombre} {repEnt.PrimerApellido} {repEnt.SegundoApellido}".Trim(),
+                                        Total = total
+                                    };
+
+                                    var salida = new PedidoCompletoDto { Encabezado = encDto, Detalles = detsDto };
+
+                                    res = MensajeRespuesta.Ok(salida, req.CorrelationId);
+                                    EscribirBitacora($"[Registro] Pedido #{sol.NumeroPedido} de cliente {cliEnt.Identificacion} con {detsDto.Count} detalle(s).");
+                                    break;
+                                }
+
+                            // ----------------------------------------------
+                            // CONSULTAR PEDIDOS DE UN CLIENTE
+                            // req.Datos: { "clienteId": 123 }
+                            // res.Datos: List<PedidoCompletoDto>
+                            // ----------------------------------------------
+                            case "consultar_pedidos_cliente":
+                                {
+                                    if (!req.TryGetDato<int>("clienteId", out var clienteId))
+                                        throw new InvalidOperationException("Faltan datos: { clienteId }");
+
+                                    var pedidos = PedidoLogica.ObtenerTodosLosPedidos()
+                                        .Where(p => p != null && p.Cliente?.Identificacion == clienteId)
+                                        .ToList();
+
+                                    var listaEnc = new List<PedidoEncabezadoDto>();
+                                    foreach (var p in pedidos!)
+                                    {
+                                        var dets = PedidoLogica.ObtenerDetallesPorPedido(p.NumeroPedido);
+                                        listaEnc.Add(PedidoEncabezadoDto.FromEntidad(p, dets));
+                                    }
+
+                                    res = MensajeRespuesta.Ok(listaEnc, req.CorrelationId);
+                                    EscribirBitacora($"[Consulta] pedidos de cliente {clienteId} -> {listaEnc.Count}");
+                                    break;
+                                }
+
+                            // ----------------------------------------------
+                            // CONSULTAR UN PEDIDO ESPECÍFICO POR NÚMERO
+                            // req.Datos: { "numero": 5001 }
+                            // res.Datos: PedidoCompletoDto
+                            // ----------------------------------------------
+                            case "consultar_pedido_por_numero":
+                                {
+                                    if (!req.TryGetDato<int>("numero", out var numero))
+                                        throw new InvalidOperationException("Faltan datos: { numero }");
+
+                                    var ped = PedidoLogica.ObtenerTodosLosPedidos()
+                                              .FirstOrDefault(p => p != null && p.NumeroPedido == numero);
+
+                                    if (ped == null)
+                                    {
+                                        res = MensajeRespuesta.Fail("No existe el pedido.", req.CorrelationId);
+                                        break;
+                                    }
+
+                                    var dets = PedidoLogica.ObtenerDetallesPorPedido(numero);
+                                    var dto = PedidoCompletoDto.FromEntidades(ped, dets);
+
+                                    res = MensajeRespuesta.Ok(dto, req.CorrelationId);
+                                    EscribirBitacora($"[Consulta] pedido #{numero} -> {dto.Detalles.Count} detalle(s)");
+                                    break;
+                                }
+
 
 
                             default:

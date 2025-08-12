@@ -71,13 +71,8 @@ namespace Entregas.Entidades
             if (detalles == null) throw new ArgumentNullException(nameof(detalles));
 
             var listaDet = PedidoDetalleDto.FromEntidades(detalles);
-            var enc = PedidoEncabezadoDto.FromEntidad(p, listaDet.Select(d => new DetallePedido
-            {
-                // Nota: solo usamos Monto y Cantidad para total; los demás campos no son necesarios aquí.
-                Cantidad = d.Cantidad,
-                Monto = d.Monto,
-                Articulo = new Articulo { Id = d.ArticuloId, Nombre = d.ArticuloNombre, TipoArticulo = new TipoArticulo { Nombre = d.TipoNombre } }
-            }));
+            var total = listaDet.Sum(d => d.Monto);
+            var enc = PedidoEncabezadoDto.FromEntidad(p, total);
 
             return new PedidoCompletoDto
             {
@@ -85,6 +80,7 @@ namespace Entregas.Entidades
                 Detalles = listaDet
             };
         }
+
 
         public static bool TryFromEntidades(Pedido? p, IEnumerable<DetallePedido?>? detalles, out PedidoCompletoDto? dto)
         {
