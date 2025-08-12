@@ -12,19 +12,22 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using Entregas.Entidades;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Entregas.Presentacion
 {
     public partial class FormMenuPrincipal : Form
     {
 
-        private TcpListener listener;
+        private TcpListener? listener;
         private int clientesConectados = 0;
         private const int puerto = 14100;
         private const int maxClientes = 5;
-        private bool escuchando = false;
+        private volatile bool escuchando = false;
 
         public FormMenuPrincipal()
         {
@@ -121,25 +124,47 @@ namespace Entregas.Presentacion
                 listener.Start();
                 escuchando = true;
 
-                Thread hiloListener = new Thread(() =>
+                var hiloListener = new Thread(() =>
                 {
                     EscribirBitacora("Servidor escuchando en 127.0.0.1:" + puerto);
+
                     while (escuchando)
                     {
-                        if (listener.Pending())
+                        try
                         {
-                            if (clientesConectados < maxClientes)
+                            if (listener != null && listener.Pending())
                             {
-                                TcpClient cliente = listener.AcceptTcpClient();
-                                Interlocked.Increment(ref clientesConectados);
-                                ActualizarContador();
+                                var cliente = listener.AcceptTcpClient();
 
-                                ThreadPool.QueueUserWorkItem(ManejarCliente, cliente);
+                                if (Interlocked.CompareExchange(ref clientesConectados, 0, 0) < maxClientes)
+                                {
+                                    Interlocked.Increment(ref clientesConectados);
+                                    ActualizarContador();
+
+                                    // espera object?  -> método recibe object?
+                                    ThreadPool.QueueUserWorkItem(ManejarCliente, cliente);
+                                }
+                                else
+                                {
+                                    // Rechazar la conexión
+                                    using var s = cliente.GetStream();
+                                    using var w = new StreamWriter(s, new UTF8Encoding(false)) { AutoFlush = true };
+                                    var res = JsonMensajeria.Fail("Servidor ocupado, intente nuevamente.");
+                                    w.Write(JsonMensajeria.SerializarRespuestaLinea(res));
+                                    cliente.Close();
+                                    EscribirBitacora("Conexión rechazada (máximo de clientes).");
+                                }
                             }
+
+                            Thread.Sleep(50);
                         }
-                        Thread.Sleep(100); // evitar consumo excesivo de CPU
+                        catch (Exception exLoop)
+                        {
+                            EscribirBitacora("Error en loop del listener: " + exLoop.Message);
+                        }
                     }
                 });
+
                 hiloListener.IsBackground = true;
                 hiloListener.Start();
             }
@@ -149,27 +174,87 @@ namespace Entregas.Presentacion
             }
         }
 
-        private void ManejarCliente(object obj)
+
+        private async void ManejarCliente(object? obj)
         {
-            TcpClient cliente = (TcpClient)obj;
+            var cliente = (TcpClient?)obj;
+            if (cliente == null) return;
+
             string clienteIP = cliente.Client.RemoteEndPoint?.ToString() ?? "Cliente desconocido";
             EscribirBitacora($"Cliente conectado: {clienteIP}");
 
             try
             {
-                NetworkStream stream = cliente.GetStream();
-                byte[] buffer = new byte[1024];
-                int bytesLeidos;
+                using var stream = cliente.GetStream();
+                using var reader = new StreamReader(stream, new UTF8Encoding(false), detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+                using var writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize: 1024, leaveOpen: true) { AutoFlush = true };
 
-                while ((bytesLeidos = stream.Read(buffer, 0, buffer.Length)) > 0)
+                string? linea;
+                while ((linea = await reader.ReadLineAsync()) != null)   // mensajes terminados en \n
                 {
-                    string mensaje = Encoding.UTF8.GetString(buffer, 0, bytesLeidos);
-                    EscribirBitacora($"Mensaje recibido: {mensaje}");
+                    if (string.IsNullOrWhiteSpace(linea)) continue;
 
-                    // (Aquí luego llamarás a lógica según el mensaje recibido)
-                    string respuesta = "Recibido";
-                    byte[] respuestaBytes = Encoding.UTF8.GetBytes(respuesta);
-                    stream.Write(respuestaBytes, 0, respuestaBytes.Length);
+                    MensajeSolicitud req;
+                    try
+                    {
+                        req = JsonMensajeria.DeserializarSolicitud(linea);
+                    }
+                    catch (Exception exJson)
+                    {
+                        EscribirBitacora($"JSON inválido: {exJson.Message}");
+                        var err = MensajeRespuesta.Fail("JSON inválido");
+                        await writer.WriteAsync(JsonMensajeria.SerializarRespuestaLinea(err));
+                        continue;
+                    }
+
+                    EscribirBitacora($"Comando recibido: {req.Comando}");
+
+                    MensajeRespuesta res;
+
+                    try
+                    {
+                        switch (req.Comando?.ToLowerInvariant())
+                        {
+                            case "ping":
+                                res = MensajeRespuesta.Ok(new { message = "pong" }, req.CorrelationId);
+                                break;
+
+                            case "listar_articulos_activos":
+                                {
+                                    var lista = Entregas.Datos.ArticuloDatos.ObtenerTodos()
+                                        .Where(a => a != null && a.Activo)
+                                        .Select(a => ArticuloDto.FromEntidad(a!))
+                                        .ToList();
+
+                                    res = MensajeRespuesta.Ok(lista, req.CorrelationId);
+                                }
+                                break;
+
+                            case "obtener_articulo_por_id":
+                                {
+                                    
+                                    if (!req.TryGetDato<int>("id", out var id))
+                                        throw new InvalidOperationException("Faltan datos: { id }");
+
+                                    var art = Entregas.Datos.ArticuloDatos.ObtenerPorId(id);
+                                    if (art == null) throw new InvalidOperationException("No existe el artículo");
+
+                                    res = MensajeRespuesta.Ok(ArticuloDto.FromEntidad(art), req.CorrelationId);
+                                }
+                                break;
+
+
+                            default:
+                                res = MensajeRespuesta.Fail("Comando no soportado", req.CorrelationId);
+                                break;
+                        }
+                    }
+                    catch (Exception exCmd)
+                    {
+                        res = MensajeRespuesta.Fail(exCmd.Message, req.CorrelationId);
+                    }
+
+                    await writer.WriteAsync(JsonMensajeria.SerializarRespuestaLinea(res));
                 }
             }
             catch (Exception ex)
@@ -184,6 +269,7 @@ namespace Entregas.Presentacion
                 EscribirBitacora($"Cliente desconectado: {clienteIP}");
             }
         }
+
 
         private void EscribirBitacora(string mensaje)
         {
