@@ -99,25 +99,26 @@ namespace Entregas.Entidades
         }
 
         // Intenta obtener una propiedad específica dentro de 'Datos' y convertirla a T.
-        public bool TryGetDato<T>(string propertyName, out T? value)
+        public bool TryGetDato<T>(string propertyName, out T value)
         {
-            value = default;
-
+            value = default!;
             if (string.IsNullOrWhiteSpace(propertyName)) return false;
             if (Datos is null || Datos.Value.ValueKind != JsonValueKind.Object) return false;
-
             if (!Datos.Value.TryGetProperty(propertyName, out var prop)) return false;
 
             try
             {
-                value = prop.Deserialize<T>(DefaultJsonOptions);
+                value = prop.Deserialize<T>(DefaultJsonOptions)!;
                 return true;
             }
             catch
             {
+                value = default!;
                 return false;
             }
         }
+
+
 
         // Fábricas de conveniencia para comandos comunes.
         public static MensajeSolicitud Ping(string? correlationId = null)
