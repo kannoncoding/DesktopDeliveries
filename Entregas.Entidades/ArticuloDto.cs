@@ -25,7 +25,7 @@ namespace Entregas.Entidades
             if (Inventario < 0) throw new ArgumentException("El inventario no puede ser negativo.");
         }
 
-        // ¿Está disponible para la cantidad solicitada?
+        // Está disponible para la cantidad solicitada?
         public bool EstaDisponible(int cantidadSolicitada)
             => Activo && cantidadSolicitada > 0 && Inventario >= cantidadSolicitada;
 
@@ -39,13 +39,13 @@ namespace Entregas.Entidades
             return subtotal * (1.0 + porcentajeEnvio);
         }
 
-        // Representación amigable (usa CRC como prefijo de moneda).
+        // Representación amigable (CRC como prefijo de moneda).
         public override string ToString()
             => $"{Id} - {Nombre} ({TipoNombre}) | CRC {Valor:N2} | Inv: {Inventario} | {(Activo ? "Sí" : "No")}";
 
         // ---------- Fábricas desde entidades de dominio ----------
 
-        // Convierte una entidad Articulo a DTO (evita exponer todo el objeto por la red).
+        // Convierte una entidad Articulo a DTO.
         public static ArticuloDto FromEntidad(Articulo a)
         {
             if (a == null) throw new ArgumentNullException(nameof(a));
